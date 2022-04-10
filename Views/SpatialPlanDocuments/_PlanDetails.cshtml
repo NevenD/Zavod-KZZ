@@ -1,0 +1,225 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.SpatialPlanDocumentDetailsVM
+@{
+
+    var className = GetPlanStatusClassStyle(Model.SpatialPlanStatusName);
+}
+
+
+<div class="card" style="border: unset !important">
+    <div class="card-body">
+        <form>
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Osnovne informacije o planu:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Vrsta plana:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanLevelName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Stanje plana:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanRevision">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Naziv plana:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.Name">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Status plana:</label>
+                    <div class="col-sm-8 @className">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanStatusName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Puni naziv:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.FullName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Naziv revizije plana:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.RevisionName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">ISPU kod <small>(oznaka plana)</small>:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.IspuName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Mjerilo plana:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialMeasure">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Grad/Općina</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.LocalAdministrationName">
+                    </div>
+                </div>
+            </fieldset>
+            <br />
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Prostorno planska Dokumentacija:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Grafički prilozi:</label>
+                    <div class="col-sm-8">
+                        <div class="accordion" id="accordionDocuments">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#pdfDocuments" aria-expanded="true" aria-controls="pdfDocuments">
+                                            Grafički prilozi
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="pdfDocuments" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionDocuments">
+                                    <div class="card-body" style="border-bottom: 1px solid #dfdfdf;">
+                                        @if (Model.SpatialPlanAdditionalDocuments.Count() > 0)
+                                        {
+                                            foreach (var document in Model.SpatialPlanAdditionalDocuments)
+                                            {
+                                                <a href="~/spatialPlanDocuments/@(document.UniqueFileName)" data-title-url="@document.FileName" target="_blank" rel="noopener">
+                                                    <img src="~/images/pdflogo.png" width="18" height="18"> @document.FileName
+                                                </a><br />
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <p>Trenutačno nema dostupne dokumentacije</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    
+                    </div>
+                </div>
+            </fieldset>
+            <br />
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Podaci o izradi i donošenju plana:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Datum donošenja plana općinsko/gradsko vijeće:</label>
+                    <div class="col-sm-8">
+                        @if (Model.SpatialPlanDocument.SpatialPlanEnactmentDate.HasValue)
+                        {
+                            <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.SpatialPlanEnactmentDate.Value.ToShortDateString()">
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Naziv Službenog glasnika:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.OfficialSpatialNewsName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Broj glasnika:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.OfficialSpatialNewsNumber">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Veza na glasnik:</label>
+                    <div class="col-sm-8">
+                        @if (Model.SpatialPlanDocument.OfficialSpatialNewsNumberUrl != null)
+                        {
+                            <a href="@Model.SpatialPlanDocument.OfficialSpatialNewsNumberUrl">Veza na glasnik</a>
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Odluka na snazi:</label>
+                    <div class="col-sm-8">
+                        @if (Model.SpatialPlanDocument.SpatialPlanPublicationDate.HasValue)
+                        {
+                            <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.SpatialPlanPublicationDate.Value.ToShortDateString()">
+
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Objava Glasnika:</label>
+                    <div class="col-sm-8">
+                        @if (Model.SpatialPlanDocument.SpatialPlanEffectiveDate.HasValue)
+                        {
+                            <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.SpatialPlanEffectiveDate.Value.ToShortDateString()">
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Napomena na glasnik:</label>
+                    <div class="col-sm-8">
+                        <textarea  style="max-height:130px; min-height:70px;" type="text" readonly class="form-control-sm form-control-plaintext">@Model.SpatialPlanDocument.OfficialSpatialNewsRemark</textarea>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Objava Odluke o izradi:</label>
+                    <div class="col-sm-8">
+                        @if (Model.SpatialPlanDocument.SpatialPlanAnnouncementDevelopDate.HasValue)
+                        {
+                            <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDocument.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString()">
+                        }
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Suglasnost:</label>
+                    <div class="col-sm-8">
+                        <textarea style="max-height:130px; min-height:70px;" type="text" readonly class="form-control-sm form-control-plaintext">@Model.SpatialPlanDocument.SpatialPlanApprovalRemark</textarea>
+                    </div>
+                </div>
+            </fieldset>
+            <br />
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Izrađivači plana i dodatna dokumentacija:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Izrađivač:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlannerName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Projekcija:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialProjectionName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Stanje dokumenta:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpatialPlanDeliveryName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Postoji li konzervatorska studija:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.ConservationName">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Postoji li SPUO/PUO:</label>
+                    <div class="col-sm-8">
+                        <input type="text" readonly class="form-control-sm form-control-plaintext" value="@Model.SpuoPuoDocumentStatus">
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Napomena na plan:</label>
+                    <div class="col-sm-8">
+                        <textarea type="text" readonly class="form-control-sm form-control-plaintext">@Model.SpatialPlanDocument.SpatialPlanDocumentationRemark</textarea>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+

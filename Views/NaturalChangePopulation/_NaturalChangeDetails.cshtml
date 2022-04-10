@@ -1,0 +1,295 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Population.NaturalChangeVM
+
+@{
+    var isSigned = SignInManager.IsSignedIn(User);
+    var containerClass = string.Empty;
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+    var labelData = (Model.NaturalChangeGraphData != null) ? Model.NaturalChangeGraphData.Labels : null;
+    var chartData = (Model.NaturalChangeGraphData != null) ? Model.NaturalChangeGraphData.NaturalChangeDataSets : null;
+    var administration = string.Empty;
+    var dateToday = DateTime.Now.ToShortDateString();
+    var isCity = Model.LocalGovernmentAdministration.IsAdministrativeCity;
+    var localGovernmentName = Model.LocalGovernmentAdministration.Name;
+    if (isCity)
+    {
+        administration = "Grada";
+    }
+    else
+    {
+        administration = "Općina";
+    }
+
+}
+<div class="@containerClass">
+    @if (isSigned)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                <li class="breadcrumb-item"><a asp-controller="NaturalChangePopulation" asp-action="Index">Prirodni prirast</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@localGovernmentName</li>
+            </ol>
+        </nav>
+    }
+    else
+    {
+        <br />
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item"><a asp-controller="Population" asp-action="Index">Stanovništvo</a></li>
+                <li class="breadcrumb-item"><a asp-controller="NaturalChangePopulation" asp-action="Index">Prirodni prirast</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@localGovernmentName</li>
+            </ol>
+        </nav>
+    }
+
+
+    <p class="lead" style="font-size: 1.6em;">
+        @string.Format("Prirodni prirast  po godinama za {0} {1}", administration, localGovernmentName)
+    </p>
+    <hr />
+    <div class="row ">
+        <div class="col-md-7">
+            <div class="edit-administration-form">
+                <div class="card">
+                    <h6 class="card-header">Prirodni prirast </h6>
+                    <div class="card-body">
+                        <div class="accordion" id="accordionExample">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData" aria-expanded="true" aria-controls="infoData">
+                                            Prirodni prirast po godinama
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="infoData" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        @if (Model.NaturalChangePopulation.Any())
+                                        {
+                                            <table class="table table-sm table-striped table-bordered small display nowrap"
+                                                   width="100%" id="naturalChangeLocalGovernment">
+                                                <thead>
+                                                    <tr>
+                                                        @if (isSigned)
+                                                        {
+                                                            <th rowspan="2" class="text-center">Akcije</th>
+                                                        }
+                                                        <th rowspan="2" class="text-center">JLS</th>
+                                                        <th rowspan="2" class="text-center">Godina</th>
+                                                        <th colspan="3" class="text-center">Rođeni</th>
+                                                        <th colspan="3" class="text-center">Umrli</th>
+                                                        <th rowspan="2" class="text-center">Prirodni prirast</th>
+                                                        <th rowspan="2" class="text-center">Vitalni indeks</th>
+                                                        <th rowspan="2" class="text-center">Stopa Nataliteta</th>
+                                                        <th rowspan="2" class="text-center">Stopa Mortaliteta</th>
+
+                                                    </tr>
+                                                    <tr>
+                                                        <th>Živorođeni</th>
+                                                        <th>Mrtvorođeni</th>
+                                                        <th>Ukupno</th>
+                                                        <th>Umrli</th>
+                                                        <th>Umrla dojenčad</th>
+                                                        <th>Ukupno</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.NaturalChangePopulation)
+                                                    {
+                                                        <tr>
+                                                            @if (isSigned)
+                                                            {
+                                                                <td>
+                                                                    <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                                                    <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="right" title="Izbriši" data-road-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                                                                </td>
+                                                            }
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.LocalGovernmentAdministration.Name)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Year)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.LiveBirth)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.StillBirth)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.TotalBirth)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Death)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.InfantDeath)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.TotalDeathBirth)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.NaturalIncrease)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.VitalIndex)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.BirthRate)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.DeathRate)
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-5">
+            <div class="edit-administration-form">
+                <canvas id="localGovernmentNaturalChangeGraph" style="width:600px; height:650px"></canvas>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div>
+        <a class="btn btn-outline-secondary" asp-controller="NaturalChangePopulation" asp-action="Index" role="button"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+    </div>
+    <br />
+    <br />
+</div>
+
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+<script>
+      
+        $('[data-toggle="tooltip"]').tooltip();
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+        let graphArrayDataLabels = @Html.Raw(Json.Serialize(labelData));
+        let graphArrayDataValues = @Html.Raw(Json.Serialize(chartData));
+
+        let naturalChangeTable = $('#naturalChangeLocalGovernment').DataTable({
+                dom: 'Bfrtip',
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+            buttons: [{
+                text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                className: 'btn btn-outline-success',
+                extend: 'excelHtml5',
+                autoFilter: true,
+                sheetName: 'Exported data',
+                title: 'Tablica_' + dateToday
+            }],
+                bLengthChange: false,
+          });
+
+
+    var ctx = document.getElementById('localGovernmentNaturalChangeGraph').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: graphArrayDataLabels,
+            datasets: graphArrayDataValues
+        },
+        options: {
+            legend: {
+                fillStyle: 'none',
+                onHover: function (event, legendItem) {
+                    document.getElementById("localGovernmentNaturalChangeGraph").style.cursor = 'pointer';
+                }
+            },
+            tooltips: {
+                mode: 'label',
+            },
+            hover: {
+                onHover: function (e, el) {
+                    $("#localGovernmentNaturalChangeGraph").css("cursor", el[0] ? "pointer" : "default");
+                }
+            },
+            plugins: {
+                datalabels: {
+                    display: false,
+                },
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    },
+                    gridLines: {
+                        display: false
+                    }
+                }],
+                xAxes: [{
+                    gridLines: {
+                        display: false
+                    }
+                }],
+            }
+        }
+    });
+
+    $("#naturalChangeLocalGovernment").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabranu popisnu godinu?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/NaturalChangePopulation/DeleteNaturalChange/";
+                            let id = button.attr("data-road-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    naturalChangeTable.row(button.parents("tr")).remove().draw();
+                                    location.reload();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+
+</script>
+
+}
+

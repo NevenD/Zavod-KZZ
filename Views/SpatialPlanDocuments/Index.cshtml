@@ -1,0 +1,238 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.SpatialPlanDocumentViewVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var spatialPlansSum = Model.SpatialPlanDocuments.Count();
+
+    var spatialPlansValid = Model.SpatialPlanDocuments.Where(x => x.SpatialPlanStatusId == (int)Enums.SpatialPlanStatus.VALID);
+    var spatialPlansNotValid = Model.SpatialPlanDocuments.Where(x => x.SpatialPlanStatusId == (int)Enums.SpatialPlanStatus.INVALID);
+    var spatialPlansInProgress = Model.SpatialPlanDocuments.Where(x => x.SpatialPlanStatusId == (int)Enums.SpatialPlanStatus.IN_PROGRESS);
+
+    var lastAdded = (Model.SpatialPlanDocuments.OrderByDescending(x => x.DateAdded).FirstOrDefault() != null)
+        ? Model.SpatialPlanDocuments.OrderByDescending(x => x.DateAdded).FirstOrDefault().DateAdded.Value.ToShortDateString() : "Nije dostupno";
+    var isSigned = SignInManager.IsSignedIn(User);
+
+}
+
+
+    <div class="container">
+        <br />
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item active" aria-current="page">Prostorni Planovi</li>
+            </ol>
+        </nav>
+        <br />
+        @if (!isSigned)
+        {
+            <span class="float-right"><small>Zadnje ažuriranje: @lastAdded</small></span>
+        }
+        <p class="lead" style="font-size: 1.6em;">
+            Registar prostorno planske dokumentacije
+        </p>
+        <hr />
+        <div class="row">
+            <div class="col-12">
+                <div class="edit-administration-form">
+                    <p><b>Registar prostornih planova</b> sadrži svu prostornu plansku dokumentaciju za područje Krapinsko-zagorske županije. Popis se ažurira na dnevnoj bazi i nadopunjuje se s prilozima u <b>.pdf</b> obliku. Prostorno planska dokumentacija objavljena u Registru prostornih planova istovjetni su originalu plana ovjerenom od strane nositelja izrade.</p>
+                    <div class="row">
+                        <div class="col-8">
+                            <p class="lead" style="font-size: 1em;"> Važeći zakon/i o prostornom uređenju i gradnji:</p>
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in Model.Regulations)
+                                {
+                                    <li class="list-group-item"><a href="@item.Url" target="_blank" rel="noopener">@String.Format("{0} - {1}", item.Name, item.Number)</a><span class="float-right"><small> Datum stupanja na snagu: @(item.RegulationEffectiveDate.HasValue ? item.RegulationEffectiveDate.Value.ToShortDateString(): string.Empty)</small></span></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-12">
+                <div class="edit-administration-form">
+                    <div class="accordion" id="accordionExample">
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#spatialPlans" aria-expanded="true" aria-controls="spatialPlans">
+                                        <i class="fa fa-table" aria-hidden="true"></i> Ukupan popis prostornih planova
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="spatialPlans" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" style="font-size: 1.15em;">
+                                <div class="card-body">
+                                    <div style="display: flex;align-items: center;">
+                                        <p class="lead spatial-status-valid">
+                                            <span style="margin-left: 7px;">Prostorni planovi na snazi</span>
+                                        </p>
+                                        <p class="lead spatial-status-inprogress" style="margin-left: 20px;">
+                                            <span style="margin-left: 7px;">Prostorni planovi u izradi</span>
+                                        </p>
+                                        <p class="lead spatial-status-invalid" style="margin-left: 20px;">
+                                            <span style="margin-left: 7px;">Prostorni planovi van snage</span>
+                                        </p>
+                                    </div>
+                                    <hr />
+                                    @await Html.PartialAsync("_SpatialPlansTable", model: Model.SpatialPlanDocuments)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <br />
+        <div class="row">
+            <div class="col-4">
+                <div class="edit-administration-form">
+                    <p class="lead spatial-status-inprogress" style="font-size: 1.1em; margin-left:0.6rem;">
+                        <span style="margin-left: 7px;">Prostorni planovi u izradi</span>
+                    </p>
+                    <hr />
+                    <div class="timeline-container">
+                        <ul class="timeline" style="margin-right:10px">
+                            @foreach (var spatialPlan in spatialPlansInProgress)
+                            {
+                                <li style="margin-bottom: 30px;">
+                                    <p><b>@spatialPlan.Name</b></p>
+                                    <hr style="margin-top:-10px;" />
+                                    <p style="margin-top:-10px" class="spatial-plans-list">ISPU kod:  <b>@spatialPlan.IspuName</b></p>
+                                    <p class="spatial-plans-list">Objava odluke o izradi:  <b>@spatialPlan.OfficalSpatialNews.ShortName  @spatialPlan.OfficialSpatialNewsNumber</b></p>
+                                    @if (spatialPlan.SpatialPlanAnnouncementDevelopDate.HasValue)
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>@spatialPlan.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString()</b></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>Nije dostupan</b></p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="edit-administration-form">
+                    <p class="lead spatial-status-valid" style="font-size: 1.1em; margin-left:0.6rem;">
+                        <span style="margin-left: 7px;">Prostorni planovi na snazi</span>
+                    </p>
+                    <hr />
+                    <div class="timeline-container">
+                        <ul class="timeline" style="margin-right:10px">
+                            @foreach (var spatialPlan in spatialPlansValid)
+                            {
+                                <li style="margin-bottom: 30px;">
+                                    <p><b>@spatialPlan.Name</b></p>
+                                    <hr style="margin-top:-10px;" />
+                                    <p style="margin-top:-10px" class="spatial-plans-list">ISPU kod:  <b>@spatialPlan.IspuName</b></p>
+                                    <p class="spatial-plans-list">Objava odluke o izradi:  <b>@spatialPlan.OfficalSpatialNews.ShortName  @spatialPlan.OfficialSpatialNewsNumber</b></p>
+                                    @if (spatialPlan.SpatialPlanAnnouncementDevelopDate.HasValue)
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>@spatialPlan.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString()</b></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>Nije dostupan</b></p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="edit-administration-form">
+                    <p class="lead spatial-status-invalid" style="font-size: 1.1em; margin-left:0.6rem;">
+                        <span style="margin-left: 7px;">Prostorni planovi van snage</span>
+                    </p>
+                    <hr />
+                    <div class="timeline-container">
+                        <ul class="timeline" style="margin-right:10px">
+                            @foreach (var spatialPlan in spatialPlansNotValid)
+                            {
+                                <li style="margin-bottom: 30px;">
+                                    <p><b>@spatialPlan.Name</b></p>
+                                    <hr style="margin-top:-10px;" />
+                                    <p style="margin-top:-10px" class="spatial-plans-list">ISPU kod:  <b>@spatialPlan.IspuName</b></p>
+                                    <p class="spatial-plans-list">Objava odluke o izradi:  <b>@spatialPlan.OfficalSpatialNews.ShortName  @spatialPlan.OfficialSpatialNewsNumber</b></p>
+                                    @if (spatialPlan.SpatialPlanAnnouncementDevelopDate.HasValue)
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>@spatialPlan.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString()</b></p>
+                                    }
+                                    else
+                                    {
+                                        <p class="spatial-plans-list">Datum objave Odluke: <b>Nije dostupan</b></p>
+                                    }
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+    </div>
+<style>
+    .form-group label {
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: unset;
+    }
+</style>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#collapseOne').collapse({
+                toggle: true
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+            $('#spatialPlansList').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                bLengthChange: false,
+            });
+
+
+
+            $(".js-details").click(function () {
+
+                let url = "/SpatialPlanDocuments/Details/";
+                let id = $(this).attr("data-spatial-plan-details");
+                $.ajax({
+                    type: "GET",
+                    url: `${url}${id}`,
+                    success: function (data) {
+                        bootbox.dialog({
+                            message: data,
+                            scrollable: true,
+                            size: 'large',
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Završi',
+                                    className: 'btn-success'
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

@@ -1,0 +1,545 @@
+﻿/* Please see documentation at https://docs.microsoft.com/aspnet/core/client-side/bundling-and-minification
+for details on configuring this project to bundle and minify static web assets. */
+
+.map {
+    height: 600px;
+}
+
+.ui-widget-content .ui-state-default {
+    border: none !important;
+    background: #39b54a !important;
+    font-weight: normal;
+    border-radius: 50% !important;
+    margin-top: -3px;
+}
+
+.ol-control button {
+    margin: 2px !important;
+    color: #009244 !important;
+    font-size: 1.4em !important;
+    height: 1.475em !important;
+    width: 1.475em !important;
+    background-color: rgb(255, 254, 254) !important;
+}
+
+.map-admin {
+    height: 720px;
+}
+
+.col-md-3 {
+    padding-right: 0px !important;
+}
+
+
+.hoverTable:hover {
+    background-color: #afd1a0;
+    cursor: pointer;
+    color: white;
+}
+
+.slider-custom {
+    height: 5px !important;
+}
+
+.last-tab {
+    text-align: end;
+}
+
+.cultureList_wrapper {
+    margin-top: -10px;
+}
+
+.noPolygonStyle {
+    margin-left: 20px;
+    border-left: 6px solid #f8cfcf;
+}
+
+.properties-modal {
+    top: 89px;
+    margin-left: 9px;
+}
+
+.properties-modal-layers {
+    top: 130px;
+    margin-left: 9px;
+}
+
+
+.draw-reset-button {
+    top: 670px;
+    margin-left: 9px;
+}
+
+.draw-button {
+    top: 670px;
+    margin-left: 50px;
+}
+
+.draw-edit-button {
+    top: 670px;
+    margin-left: 91px;
+}
+.draw-undo-button {
+    top: 670px;
+    margin-left: 132px;
+}
+.draw-delete-button {
+    top: 670px;
+    margin-left: 173px;
+}
+.upload-documents {
+    border-bottom: 1px solid lightgray;
+}
+
+
+a.navbar-brand {
+  white-space: normal;
+  text-align: center;
+  word-break: break-all;
+}
+
+.input-validation-error {
+    border: 1px solid #e43333;
+}
+
+.spatial-plans-list{
+    font-size: small;
+    margin-bottom: 5px;
+    font-style:italic;
+}
+
+.spatial-plan-number {
+    font-size: 1.71rem;
+    margin-top: -10px;
+    margin-bottom: -10px;
+}
+
+
+
+.timeline-container {
+    font-weight: 200;
+    overflow-y: auto;
+    height: 350px;
+}
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+}
+
+    ul.timeline:before {
+        content: ' ';
+        background: #c1c1c1;
+        display: inline-block;
+        position: absolute;
+        left: 19px;
+        width: 2px;
+        height: 100%;
+        z-index: 400;
+    }
+
+
+
+    ul.timeline > li:before {
+        content: ' ';
+        background: white;
+        display: inline-block;
+        position: absolute;
+        border-radius: 50%;
+        border: 1px solid #c1c1c1;
+        left: 13px;
+        width: 15px;
+        height: 15px;
+        z-index: 400;
+    }
+
+
+
+.spatial-status-inprogress {
+    border-left: 7px solid #03a9f4 !important;
+}
+
+.spatial-status-valid {
+    border-left: 7px solid #29c272 !important;
+}
+
+.spatial-status-invalid {
+    border-left: 7px solid #dd3333 !important;
+}
+.spatial-status-archived {
+    border-left: 7px solid #ff9800 !important;
+}
+
+
+.edit-administration-form {
+    border: 1px solid lightgray;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.2), 1px 1px 5px 0 rgba(0, 0, 0, 0.19);
+    background-color: white;
+}
+
+.kzz-list-group {
+    max-height: 450px;
+    margin-bottom: 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    border-bottom: 1px solid #dfdfdf;
+}
+
+.masthead {
+    background: url("../images/image_gis.png");
+}
+
+.timeline-container {
+    font-weight: 200;
+    overflow-y: auto;
+    height: 350px;
+}
+
+ul.timeline {
+    list-style-type: none;
+    position: relative;
+}
+
+    ul.timeline:before {
+        content: ' ';
+        background: #c1c1c1;
+        display: inline-block;
+        position: absolute;
+        left: 19px;
+        width: 2px;
+        height: 100%;
+        z-index: 400;
+    }
+
+ 
+
+        ul.timeline > li:before {
+            content: ' ';
+            background: white;
+            display: inline-block;
+            position: absolute;
+            border-radius: 50%;
+            border: 1px solid #c1c1c1;
+            left: 13px;
+            width: 15px;
+            height: 15px;
+            z-index: 400;
+        }
+
+
+
+.spatial-status-inprogress {
+    border-left: 7px solid #03a9f4;
+}
+
+.spatial-status-valid {
+    border-left: 7px solid #29c272;
+}
+
+.spatial-status-invalid {
+    border-left: 7px solid #dd3333;
+}
+.i-card {
+    color: #14141426;
+    position: absolute;
+    margin-left: 160px;
+    margin-top: -12px;
+}
+
+.border-card-success {
+    border-left: 7px solid #29c272;
+}
+
+.border-card-danger {
+    border-left: 7px solid #d33;
+}
+
+.border-card-info {
+    border-left: 7px solid #266cd8;
+}
+
+.carousel-font-shadow {
+    color:white;
+    text-shadow: 5px 5px 10px black;
+}
+.lead-edit-administration {
+    font-size: 1.30em;
+    font-weight: 600;
+}
+
+.edit-administration-form {
+    border: 1px solid lightgray;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0px 0px 0 rgba(0, 0, 0, 0.2), 1px 1px 5px 0 rgba(0, 0, 0, 0.19);
+    background-color: white;
+}
+
+.kzz-list-group {
+    max-height: 450px;
+    margin-bottom: 10px;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: auto;
+    border-bottom: 1px solid #dfdfdf;
+}
+/* Sticky footer styles
+-------------------------------------------------- */
+    html {
+  font-size: 14px;
+}
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.border-top {
+  border-top: 1px solid #e5e5e5;
+}
+.border-bottom {
+  border-bottom: 1px solid #e5e5e5;
+}
+
+.box-shadow {
+  box-shadow: 0 .25rem .75rem rgba(0, 0, 0, .05);
+}
+
+button.accept-policy {
+  font-size: 1rem;
+  line-height: inherit;
+}
+
+/* Sticky footer styles
+-------------------------------------------------- */
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  line-height: 60px; /* Vertically center the text there */
+}
+
+
+/* GLOBAL STYLES
+-------------------------------------------------- */
+/* Padding below the footer and lighter body text */
+
+body {
+    padding-bottom: 3rem;
+    color: #5a5a5a;
+}
+
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel {
+    margin-bottom: 4rem;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+    bottom: 3rem;
+    z-index: 10;
+}
+
+/* Declare heights because of positioning of img element */
+.carousel-item {
+    height: 32rem;
+}
+
+    .carousel-item > img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        min-width: 100%;
+        height: 32rem;
+    }
+
+
+/* MARKETING CONTENT
+-------------------------------------------------- */
+
+/* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.marketing h2 {
+    font-weight: 400;
+}
+
+.marketing .col-lg-4 p {
+    margin-right: .75rem;
+    margin-left: .75rem;
+}
+
+
+/* Featurettes
+------------------------- */
+
+.featurette-divider {
+    margin: 5rem 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -.05rem;
+}
+
+
+/* RESPONSIVE CSS
+-------------------------------------------------- */
+
+@media (min-width: 40em) {
+    /* Bump up size of carousel content */
+    .carousel-caption p {
+        margin-bottom: 1.25rem;
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+
+    .featurette-heading {
+        font-size: 50px;
+    }
+}
+
+@media (min-width: 62em) {
+    .featurette-heading {
+        margin-top: 7rem;
+    }
+}
+
+
+.details-population {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+
+@-webkit-keyframes shake {
+    from, to {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        -webkit-transform: translate3d(-10px, 0, 0);
+        transform: translate3d(-10px, 0, 0);
+    }
+
+    20%, 40%, 60%, 80% {
+        -webkit-transform: translate3d(10px, 0, 0);
+        transform: translate3d(10px, 0, 0);
+    }
+}
+
+@keyframes shake {
+    from, to {
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+
+    10%, 30%, 50%, 70%, 90% {
+        -webkit-transform: translate3d(-10px, 0, 0);
+        transform: translate3d(-10px, 0, 0);
+    }
+
+    20%, 40%, 60%, 80% {
+        -webkit-transform: translate3d(10px, 0, 0);
+        transform: translate3d(10px, 0, 0);
+    }
+}
+
+.shake {
+    -webkit-animation-name: shake;
+    animation-name: shake;
+}
+
+
+
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}
+
+    .animated.infinite {
+        -webkit-animation-iteration-count: infinite;
+        animation-iteration-count: infinite;
+    }
+
+    .animated.delay-1s {
+        -webkit-animation-delay: 1s;
+        animation-delay: 1s;
+    }
+
+    .animated.delay-2s {
+        -webkit-animation-delay: 2s;
+        animation-delay: 2s;
+    }
+
+    .animated.delay-3s {
+        -webkit-animation-delay: 3s;
+        animation-delay: 3s;
+    }
+
+    .animated.delay-4s {
+        -webkit-animation-delay: 4s;
+        animation-delay: 4s;
+    }
+
+    .animated.delay-5s {
+        -webkit-animation-delay: 5s;
+        animation-delay: 5s;
+    }
+
+    .animated.fast {
+        -webkit-animation-duration: 800ms;
+        animation-duration: 800ms;
+    }
+
+    .animated.faster {
+        -webkit-animation-duration: 500ms;
+        animation-duration: 500ms;
+    }
+
+    .animated.slow {
+        -webkit-animation-duration: 2s;
+        animation-duration: 2s;
+    }
+
+    .animated.slower {
+        -webkit-animation-duration: 3s;
+        animation-duration: 3s;
+    }
+
+@media (print), (prefers-reduced-motion: reduce) {
+    .animated {
+        -webkit-animation-duration: 1ms !important;
+        animation-duration: 1ms !important;
+        -webkit-transition-duration: 1ms !important;
+        transition-duration: 1ms !important;
+        -webkit-animation-iteration-count: 1 !important;
+        animation-iteration-count: 1 !important;
+    }
+}

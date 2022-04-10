@@ -1,0 +1,249 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.SpatialPlannersIndexVM
+
+@{
+    var graphDataLabels = Model.PieChartData.SpatialPlannersName.ToArray();
+    var graphDataValues = Model.PieChartData.SpatiaPlansCountByPlanner.ToArray();
+
+
+    var lastAdded = Model.SpatialPlanners.OrderByDescending(x => x.Id).FirstOrDefault();
+
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="DashBoard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Uređivanje i pregled izrađivača planova </li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Dodavanje novog izrađivača
+            </p>
+            <hr />
+            <p style="font-size: 0.95rem;font-weight: 200;">Novo dodani izrađivač Plana biti će vidljiv prilikom odabira izrađivača u sklopu modula dodavanja plana </p>
+            <a class="btn btn-outline-secondary btn-sm btn-block" asp-action="Create"><i class="fas fa-user-plus"></i> Dodaj novog izrađivača</a>
+        </div>
+    </div>
+    <div class="col-md-3 offset-md-6">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Zadnje unesen izrađivač
+            </p>
+            <hr />
+            <div class="media">
+                <div class="media-body">
+                    <h6 class="mt-0">Naziv izrađivača: @lastAdded.Name</h6>
+                    <p class="mb-0">Općina/Grad: @lastAdded.WebAdress</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-6">
+        <div class="edit-administration-form">
+            <table class="table table-striped table-bordered small" id="spatialPlannersTable">
+                <thead>
+                    <tr>
+                        <th>
+                            Naziv
+                        </th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.SpatialPlanners)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="top" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                <button class="btn btn-outline-primary btn-sm js-details" data-toggle="tooltip" data-placement="top" title="Detalji" data-spatial-planners-details="@item.Id"><i class="fas fa-info"></i></button>
+                                <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="top" title="Izbriši" data-spatial-planners-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="edit-administration-form">
+            <canvas id="myChart" style="width:100%; height:500px"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+
+         let graphArrayDataLabels = @Html.Raw(Json.Serialize(graphDataLabels));
+         let graphArrayDataValues = @Html.Raw(Json.Serialize(graphDataValues));
+
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+        let chart = new Chart(ctx, {
+            // The type of chart we want to create
+            type: 'bar',
+            data: {
+                labels: graphArrayDataLabels,
+                datasets: [{
+                    label: 'Izrađivači planova',
+                    backgroundColor: getRandomColor(graphArrayDataLabels.length),
+                    data: graphArrayDataValues
+                }]
+            },
+            options: {
+                legend: {
+                    display: false,
+                    onHover: function (e) {
+                        e.target.style.cursor = 'pointer';
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                tooltips: {
+                    enabled: true,
+                    callbacks: {
+                        label: function (tooltipItem, data) {
+                            return `Broj izrađenih planova: ${tooltipItem.value}`;
+                        }
+                    }
+                },
+                hover: {
+                    onHover: function (e) {
+                        let point = this.getElementAtEvent(e);
+                        if (point.length) e.target.style.cursor = 'pointer';
+                        else e.target.style.cursor = 'default';
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        color: 'white',
+                        anchor: 'end',
+                        align: 'start',
+                        offset: -10,
+                        borderWidth: 2,
+                        borderColor: '#fff',
+                        borderRadius: 25,
+                        backgroundColor: (con) => {
+                            return con.dataset.backgroundColor;
+                        },
+                        font: {
+                            weight: 'bold',
+                            size: '10'
+                        },
+                        //formatter: (value, ctx) => {
+                        //    let datasets = ctx.chart.data.datasets;
+                        //     if (datasets.indexOf(ctx.dataset) === datasets.length - 1) {
+                        //         let sum = datasets[0].data.reduce((a, b) => a + b, 0);
+                        //         let percentage = Math.round((value / sum) * 100).toFixed(1);
+                        //         let formatPerc = `${percentage} %`;
+                        //         return formatPerc;
+
+                        //        } else {
+                        //        return formatPerc;
+                        //        }
+                        //}
+                 }
+            }}
+        });
+
+        function getRandomColor(n) {
+            let letters = '0123456789ABCDEF'.split('');
+            let color = '#';
+            let colors = [];
+            for (let j = 0; j < n; j++) {
+                for (let i = 0; i < 6; i++) {
+                    color += letters[Math.floor(Math.random() * 16)];
+                }
+                colors.push(color);
+                color = '#';
+            }
+            return colors;
+        }
+
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            let dataTable = $('#spatialPlannersTable').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                bLengthChange: false,
+            });
+
+            $("#spatialPlannersTable").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabranog izrađivača?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/SpatialPlanners/DeleteSpatialPlanners/";
+                            let id = button.attr("data-spatial-planners-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    dataTable.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(".js-details").click(function () {
+                let url = "/SpatialPlanners/Details/";
+                let id = $(this).attr("data-spatial-planners-details");
+                $.ajax({
+                    type: "GET",
+                    url: `${url}${id}`,
+                    success: function (data) {
+                        bootbox.dialog({
+                            centerVertical: true,
+                            message: data,
+                            title: "Pregled detalja",
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Završi',
+                                    className: 'btn-success'
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+        });
+    </script>
+
+}
+

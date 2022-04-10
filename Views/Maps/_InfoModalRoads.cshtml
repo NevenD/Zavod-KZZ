@@ -1,0 +1,38 @@
+﻿
+    <div class="modal fade" id="sortedRoadModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleRoad"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="description" style="display:none; margin-right: 10px;">
+                        <p class="lead text-center">Osnovni opis</p>
+                        <hr />
+                        <p class="text-muted">Oznaka ceste:<span id="codeRoad" class="float-right"></span></p>
+                        <p class="text-muted">Kategorija ceste:<span id="roadCategory" class="float-right"></span></p>
+                        <hr />
+                        <p class="text-muted">Opis:&nbsp;&nbsp;<span id="descriptionRoad" style="font-size:13px; text-decoration: underline;"></span></p>
+                        <br />
+                        <p class="mb-1 lead text-center">Podaci o duljini i širini ceste</p>
+                        <hr />
+                        <p class="text-muted">Duljina po NN:<span id="officialLength" class="float-right"></span></p>
+                        <p class="text-muted">Mjereno na DOF-u:<span id="dofLength" class="float-right"></span></p>
+                        <p class="text-muted">Širina koridora:<span id="roadCoridor" class="float-right"></span></p>
+                        <p class="text-muted">Širina ceste:<span id="roadWidth" class="float-right"></span></p>
+                        <p class="mb-1 lead text-center">Dodatni podaci:</p>
+                        <hr />
+                        <p class="text-muted">Napomena:&nbsp;&nbsp;<span id="roadRemark" style="font-size:13px; text-decoration: underline;"></span></p>
+                        <p class="text-muted">Odluka:&nbsp;&nbsp;<span id="roadDocument" style="font-size:13px; text-decoration: underline;"></span></p>
+                        <br/>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Zatvori</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

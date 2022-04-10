@@ -1,0 +1,41 @@
+﻿@model string  
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="titleCulture"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="description" style="display:none; margin-right: 10px;">
+                    <div class="d-flex w-100 justify-content-between">
+                        <small class="text-muted float-right">Zadnja izmjena @Model</small>
+                    </div>
+                    <p class="lead text-center">Osnovni opis</p>
+                    <hr />
+                    <p class="text-muted">Naziv<span id="nameCulture" class="float-right"></span></p>
+                    <p class="text-muted">Oznaka<span id="codeCulture" class="float-right"></span></p>
+                    <p class="text-muted">Vrsta kulture<span id="categoryCulture" style="font-size: 11px;" class="float-right"></span></p>
+                    <p class="text-muted">Starost dobra<span id="ageCulture" class="float-right"></span></p>
+                    <p class="text-muted">Površina<span id="areaCulture" class="float-right"></span></p>
+                    <p class="mb-1 lead text-center">Pravni status</p>
+                    <hr />
+                    <p class="text-muted">Pravni status<span id="legalCulture" class="float-right"></span></p>
+                    <p class="text-muted">Klasifikacija<span id="classificationCulture" class="float-right"></span></p>
+                    <p class="text-muted">Zaštita UNESCO<span id="unescoCulture" class="float-right"></span></p>
+                    <p class="mb-1 lead text-center">Lokacija</p>
+                    <hr />
+                    <p class="text-muted">JLS<span id="jlsCulture" class="float-right"></span></p>
+                    <p class="text-muted">Mjesto<span id="placeCulture" class="float-right"></span></p>
+                    <p class="text-muted">Adresa<span id="adressCulture" class="float-right"></span></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

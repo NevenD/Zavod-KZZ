@@ -1,0 +1,180 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.OfficialZaraDocumentsVM
+@{
+    var spanStyle = "margin-left:7px;";
+
+
+    var customSpanStyle = Model.OfficialDocumentZara.DocumentStatusZara.Id == (int)Enums.ZaraDocumentStatus.IN_PROGRESS ||
+                          Model.OfficialDocumentZara.DocumentStatusZara.Id == (int)Enums.ZaraDocumentStatus.VALID ||
+                          Model.OfficialDocumentZara.DocumentStatusZara.Id == (int)Enums.ZaraDocumentStatus.INVALID
+                          ? spanStyle : string.Empty;
+
+    var customClass =  GetOfficialDocumentStatusClass(Model.OfficialDocumentZara.DocumentStatusZara.Id);
+
+}
+<div class="card" style="border: unset !important">
+    <div class="card-body">
+        <form>
+            @if (Model.OfficialDocumentZara.DocumentIneffectiveDate.HasValue)
+            {
+            <div class="alert alert-danger" role="alert">
+               @string.Format("Dokument je stavljen izvan snage {0}", Model.OfficialDocumentZara.DocumentIneffectiveDate.Value.ToShortDateString()) 
+            </div>
+            }
+            
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Osnovne informacije o aktu:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Naziv:</label>
+                    <div class="col-sm-7">
+                        <p class="@customClass" style="margin-top: 10px;"><span style="@customSpanStyle">@Model.OfficialDocumentZara.Name</span></p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Skraćeni Naziv:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.ShortName</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Vrsta dokumenta:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.DocumentTypeZara.Name</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Status dokumenta:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.DocumentStatusZara.Name</p>
+                    </div>
+                </div>
+                <hr />
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Dodatni opis:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.DocumentRemark</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Datum stupanja na snagu:</label>
+                    <div class="col-sm-7">
+                        @if (Model.OfficialDocumentZara.DocumentEffectiveDate.HasValue)
+                        {
+                            <p style="margin-top: 10px;">Datum stupanja na snagu: <b>@Model.OfficialDocumentZara.DocumentEffectiveDate.Value.ToShortDateString()</b></p>
+                        }
+                        else
+                        {
+                            <p style="margin-top: 10px;">Datum stupanja na snagu: <b>Nije dostupan</b></p>
+                        }
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Podaci o glasniku:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Naziv glasnika:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.OfficalSpatialNews.Name</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Broj glasnika:</label>
+                    <div class="col-sm-7">
+                        <p style="margin-top: 10px;">@Model.OfficialDocumentZara.OfficialSpatialNewsNumber</p>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <label class="col-sm-5 col-form-label">Veza na glasnik:</label>
+                    <div class="col-sm-7">
+                        @if (string.IsNullOrEmpty(Model.OfficialDocumentZara.OfficialSpatialNewsNumberUrl))
+                        {
+                            <p style="margin-top: 10px;">-</p>
+                        }
+                        else
+                        {
+                            <p style="margin-top: 10px;"> <a href="Model.OfficialDocumentZara.OfficialSpatialNewsNumberUrl" target="_blank" rel=”noreferrer”>Poveznica</a></p>
+                        }
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Obavezna dokumentacija:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Obavezni grafički prilozi:</label>
+                    <div class="col-sm-8">
+                        <div class="accordion" id="accordionRequiredDocuments">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#pdfDocumentsRequired" aria-expanded="true" aria-controls="pdfDocumentsRequired">
+                                            Obavezni grafički prilozi
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="pdfDocumentsRequired" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionRequiredDocuments">
+                                    <div class="card-body" style="border-bottom: 1px solid #dfdfdf;">
+                                        @if (Model.RequiredAzureDocuments.Any())
+                                        {
+                                            foreach (var document in Model.RequiredAzureDocuments)
+                                            {
+                                                <a href="@document.DocumentUrl" data-title-url="@document.Name" target="_blank" rel="noopener">
+                                                    <img src="~/images/pdflogo.png" width="18" height="18"> @document.Name
+                                                </a><br />
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <p>Trenutačno nema dostupne dokumentacije</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+            <fieldset class="border p-2">
+                <legend class="lead w-auto">Dodatna dokumentacija:  </legend>
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label col-form-label-sm">Dodatni grafički prilozi:</label>
+                    <div class="col-sm-8">
+                        <div class="accordion" id="accordionAdditionalDocuments">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#pdfDocumentsAdditional" aria-expanded="true" aria-controls="pdfDocumentsAdditional">
+                                            Dodatni grafički prilozi
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="pdfDocumentsAdditional" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionAdditionalDocuments">
+                                    <div class="card-body" style="border-bottom: 1px solid #dfdfdf;">
+                                        @if (Model.AdditionalAzureDocuments.Any())
+                                        {
+                                            foreach (var document in Model.AdditionalAzureDocuments)
+                                            {
+                                                <a href="@document.DocumentUrl" data-title-url="@document.Name" target="_blank" rel="noopener">
+                                                    <img src="~/images/pdflogo.png" width="18" height="18"> @document.Name
+                                                </a><br />
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            <p>Trenutačno nema dostupne dokumentacije</p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+</div>
+

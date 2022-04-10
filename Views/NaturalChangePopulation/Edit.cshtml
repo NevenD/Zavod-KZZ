@@ -1,0 +1,131 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Population.CreateNaturalChangeVM
+
+@{
+
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+            <li class="breadcrumb-item"><a asp-controller="NaturalChangePopulation" asp-action="Index">Prirodna promjena</a>
+            <li class="breadcrumb-item active" aria-current="page">Prirodni prirast po @Model.NaturalChangePopulation.LocalGovernmentAdministration.Name</li>
+        </ol>
+    </nav>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            @if (!string.IsNullOrEmpty(Model.ErrorMsg))
+            {
+                <div class="alert alert-danger text-center" role="alert">
+                    @Model.ErrorMsg
+                </div>
+            }
+            <br />
+            <form asp-action="Edit">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Podaci o prirodnom kretanju stanovništva
+                    </p>
+                    <hr />
+                    <div class="form-row">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="NaturalChangePopulation.Id" />
+                        <input type="hidden" asp-for="NaturalChangePopulation.DateAdded" />
+                        <input type="hidden" asp-for="NaturalChangePopulation.LocalGovernmentAdministrationID" />
+                        <input type="hidden" asp-for="NaturalChangePopulation.Year" />
+
+                        <div class="form-group col-md-6">
+                            <label>Odaberite popisnu godinu</label>
+                            <select class="form-control" disabled name="NaturalChangePopulation.Year">
+                                @foreach (var year in Model.Years)
+                                {
+                                    if (year == Model.NaturalChangePopulation.Year)
+                                    {
+                                        <option selected value="@year">@year</option>
+                                    }
+                                    <option value="@year">@year</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label for="localGovernmentList">Jedinice lokalne samouprave</label>
+                            <select class="form-control" id="localGovernmentList" disabled asp-for="NaturalChangePopulation.LocalGovernmentAdministrationID" asp-items="@(new SelectList(Model.LocalGovernmentAdministrations, nameof(LocalGovernmentAdministration.Id), nameof(LocalGovernmentAdministration.Name)))">
+                                <option value="" selected="">Odaberite JLS</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="edit-administration-form">
+
+                    <div class="form-row">
+                        <div class="col-md-6">
+                            <p class="lead">
+                                Podaci o rođenima
+                            </p>
+                            <hr />
+                            <div class="col-md-6 offset-2">
+                                <label asp-for="NaturalChangePopulation.LiveBirth" class="control-label">Živorođeni *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input asp-for="NaturalChangePopulation.LiveBirth" class="form-control" />
+                                </div>
+                                <span asp-validation-for="NaturalChangePopulation.LiveBirth" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 offset-2">
+                                <label asp-for="NaturalChangePopulation.StillBirth" class="control-label">Mrtvorođeni</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input asp-for="NaturalChangePopulation.StillBirth" class="form-control" />
+                                </div>
+                                <span asp-validation-for="NaturalChangePopulation.StillBirth" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="lead">
+                                Podaci o umrlima
+                            </p>
+                            <hr />
+                            <div class="col-md-6 offset-2">
+                                <label asp-for="NaturalChangePopulation.Death" class="control-label">Umrli</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input asp-for="NaturalChangePopulation.Death" class="form-control" />
+                                </div>
+                                <span asp-validation-for="NaturalChangePopulation.Death" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-6 offset-2">
+                                <label asp-for="NaturalChangePopulation.InfantDeath" class="control-label">Umrla dojenčad</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input asp-for="NaturalChangePopulation.InfantDeath" class="form-control" />
+                                </div>
+                                <span asp-validation-for="NaturalChangePopulation.InfantDeath" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+
+                <div class="form-group">
+                    <a class="btn btn-outline-secondary" asp-action="Index"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                    <button type="submit" class="btn btn-outline-success"><i class="fa fa-check"></i> Pohrani </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+}

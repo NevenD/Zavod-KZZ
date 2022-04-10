@@ -1,0 +1,99 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RailroadsVM
+@{
+    var startDate = Model.Railroad.ReconstructionDateStart.HasValue ? Model.Railroad.ReconstructionDateStart.Value.ToShortDateString() : string.Empty;
+    var endDatey = Model.Railroad.ReconstructionDateEnd.HasValue ? Model.Railroad.ReconstructionDateEnd.Value.ToShortDateString() : string.Empty;
+}
+    <div class="card" style="border: unset !important">
+        <div class="card-body">
+            <form>
+                <fieldset class="border p-2">
+                    <legend class="lead w-auto">Osnovne informacije o željeznici:  </legend>
+                    <div class="form-group row">
+                        <label class="col-sm-5 col-form-label">Kod željeznice:</label>
+                        <div class="col-sm-7">
+                            <p style="margin-top: 10px;">@Model.Railroad.Code</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-5 col-form-label">Kategorija željeznice:</label>
+                        <div class="col-sm-7">
+                            <p style="margin-top: 7px;">@Model.Railroad.RailroadCategory.Name</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-5 col-form-label">Puni naziv željeznice:</label>
+                        <div class="col-sm-7">
+                            <p style="margin-top: 10px;">@Model.Railroad.FullName</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-5 col-form-label">Skraćeni naziv željeznice:</label>
+                        <div class="col-sm-7">
+                            <p style="margin-top: 10px;">@Model.Railroad.ShortName</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Građevinska duljina željeznice:</label>
+                        <div class="col-sm-4">
+                            <p style="margin-top: 10px;">@string.Format("{0} km", Model.Railroad.ConstructionLength)</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Duljina željeznice u KZŽ:</label>
+                        <div class="col-sm-4">
+                            <p style="margin-top: 10px;">@string.Format("{0} km", Model.Railroad.Lenght)</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Broj kolodvora:</label>
+                        <div class="col-sm-4">
+                            <p style="margin-top: 10px;">@Model.Railroad.TrainStationNumber</p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label ">Broj postaja:</label>
+                        <div class="col-sm-4">
+                            <p style="margin-top: 10px;">@Model.Railroad.TrainPositionNumber</p>
+                        </div>
+                    </div>
+                </fieldset>
+                <fieldset class="border p-2">
+                    <legend class="lead w-auto">Rekonstrukcija:  </legend>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Datum početka rekonstrukcije:</label>
+                        <div class="col-sm-4">
+                            @if (Model.Railroad.ReconstructionDateStart.HasValue)
+                            {
+                            <p style="margin-top: 10px;">@Model.Railroad.ReconstructionDateStart.Value.ToShortDateString()</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Datum završetka rekonstrukcije:</label>
+                        <div class="col-sm-4">
+                            @if (Model.Railroad.ReconstructionDateEnd.HasValue)
+                            {
+                                <p style="margin-top: 10px;">@Model.Railroad.ReconstructionDateEnd.Value.ToShortDateString()</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-8 col-form-label">Duljina rekonstrukcije:</label>
+                        <div class="col-sm-4">
+                            @if (Model.Railroad.ReconstructionLenght.HasValue)
+                            {
+                                <p style="margin-top: 10px;">@string.Format("{0} km", Model.Railroad.ReconstructionLenght)</p>
+                            }
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label class="col-sm-5 col-form-label">Detalji rekonstrukcije:</label>
+                        <div class="col-sm-7">
+                            <textarea style="max-height:130px; min-height:70px;" type="text" readonly class="form-control-sm form-control-plaintext">@Model.Railroad.Remark</textarea>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+        </div>
+    </div>
+

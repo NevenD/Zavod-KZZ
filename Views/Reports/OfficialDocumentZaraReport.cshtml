@@ -1,0 +1,88 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Reports.OfficialDocumentZaraViewReportVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item" aria-current="page">Izrada izvješća</li>
+        <li class="breadcrumb-item active" aria-current="page">Strateško planiranje
+        <li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-md-4 offset-md-3">
+        <p class="lead">
+            Izrada izvješća za izrađene dokumente strateškog planiranja
+        </p>
+        <hr />
+        <form asp-action="Create">
+            <div class="edit-administration-form">
+                <div class="form-row">
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="documentStatus">Status dokumenta</label>
+                        <select class="form-control" id="documentStatus" asp-items="@(new SelectList(Model.DocumentStatusZara, nameof(DocumentStatusZara.Id), nameof(DocumentStatusZara.Name)))">
+                            <option value="" selected="">Odaberite status</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="yearId">Odaberite godinu</label>
+                        <select class="form-control" id="documentYear" name="documentYear">
+                            <option value="" selected="">Odaberite godinu</option>
+                            <option value="0">Sve</option>
+                            @foreach (var year in Model.Years)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-success" id="naturalChangeReport"><i class="fa fa-check"></i> Izradi izvješće</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+    <script>
+
+        $(document).ready(function () {
+            $("#naturalChangeReport").click(function (e) {
+                e.preventDefault();
+                let documentStatusId = $("#documentStatus").val();
+                let documentYear = $("#documentYear").val();
+
+                let url = "/Reports/GetOfficialDocumentsZara/";
+
+                if (documentStatusId == "" || documentYear =="") {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger text-center' role='alert'>Odaberite potrebne podatke (Status dokumenta i/ili godinu)</div>",
+                        className: 'shake animated',
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Ispravi',
+                                className: 'btn-danger'
+                            }
+                        },
+                    });
+                } else {
+                    window.location.href = `${url}?documentYear=${documentYear}&documentStatusId=${documentStatusId}`;
+                    //https://stackoverflow.com/questions/47134698/get-excel-file-xlsx-from-server-response-in-ajax
+                }
+
+            });
+        });
+    </script>
+
+}

@@ -1,0 +1,467 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RoadsVM
+@{
+
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    var sortedRoadCategory = Model.SortedRoadsGraphChart.InfrastructureCategory.ToArray();
+    var sortedRoadCategorySum = Model.SortedRoadsGraphChart.InfrastructureCategoryCount.ToArray();
+
+    var unSortedRoadCategory = Model.UnSortedRoadsGraphChart.InfrastructureCategory.ToArray();
+    var unSortedRoadCategorySum = Model.UnSortedRoadsGraphChart.InfrastructureCategoryCount.ToArray();
+
+    var lastAdded = Model.Roads.OrderByDescending(x => x.Id).FirstOrDefault();
+    var isSigned = SignInManager.IsSignedIn(User);
+
+    var lastAddedDateValue = (Model.Roads.OrderByDescending(x => x.Id).FirstOrDefault() != null)
+    ? Model.Roads.OrderByDescending(x => x.DateAdded).FirstOrDefault().DateAdded.Value.ToShortDateString() : "Nije dostupno";
+
+
+    var containerClass = string.Empty;
+
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+    <div class="@containerClass">
+        @if (isSigned)
+        {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                    <li class="breadcrumb-item" aria-current="page">Infrastruktura</li>
+                    <li class="breadcrumb-item" aria-current="page">Cestovna infrastruktura</li>
+                </ol>
+            </nav>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="edit-administration-form">
+                        <p class="lead">
+                            Dodaj cestu
+                        </p>
+                        <hr />
+                        <p style="font-size: 0.95rem;font-weight: 200;">Cesta se dodaje na razini županije i biti će vidljiva prilikom dodavanja cesta po JLS</p>
+                        <a asp-action="Create" class="btn btn-outline-secondary btn-sm btn-block"><i class="fas fa-road"></i> Dodaj cestu</a>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="edit-administration-form">
+                        <p class="lead">
+                            Dodaj cestu po JLS
+                        </p>
+                        <hr />
+                        <p style="font-size: 0.95rem;font-weight: 200;">Cesta se dodaje na razini JLS. Omogućen odabir samo onih cesta koja su dodane na razini županije</p>
+                        <a class="btn btn-outline-secondary btn-sm btn-block" asp-controller="RoadsLocalGovernment" asp-action="Create"><i class="fas fa-road"></i> Dodaj cestu po JLS-u</a>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="edit-administration-form">
+                        <p class="lead">
+                            Zadnje unesena prometnica
+                        </p>
+                        <hr />
+                        @if (lastAdded != null)
+                        {
+                            var style = GetRoadCategoryStyle(lastAdded.RoadCategory.Id);
+
+                            <div class="media">
+                                <div class="align-self-center mr-3"><i style="@style" class="fas fa-road fa-3x"></i></div>
+                                <div class="media-body">
+                                    <h6 class="mt-0">Naziv ceste: @lastAdded.Description</h6>
+                                    <p class="mb-0">Broj ceste: @lastAdded.Code</p>
+                                    <p class="mb-0">Datum unosa: @lastAdded.DateAdded.Value.ToShortDateString()</p>
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <p>Trenutačno nema unesenih prometnica</p>
+                        }
+
+                    </div>
+                </div>
+            </div>
+            <br />
+        }
+        else
+        {
+            <br />
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                    <li class="breadcrumb-item active" aria-current="page">Cestovna infrastruktura</li>
+                </ol>
+            </nav>
+        }
+        @if (!isSigned)
+        {
+            <span class="float-right"><small>Zadnje ažuriranje: @lastAddedDateValue</small></span>
+        }
+        <p class="lead" style="font-size: 1.6em;">
+            Registar prometnica
+        </p>
+        <hr />
+        <div class="row">
+            <div class="col-12">
+                <div class="edit-administration-form">
+                    <p>
+                        Planiranje razvoja prometnog sustava na području Krapinsko-zagorske županije
+                        provodi se u skladu sa Strategijom prostornog uređenja Republike Hrvatske (1997.) i
+                        Izmjenama i dopunama Strategije prostornog uređenja (2013.) te Programom prostornog
+                        uređenja Republike Hrvatske (1999.) i njegovim Izmjenama i dopunama (2013.) <br />
+                    </p>
+                    <p>  <b>Registar prometnica</b> sadrži sveukupni popis cesta za područje Krapinsko-zagorske županije. Registar se ažurira na dnevnoj bazi i izrađen je na temelju Zakona o cestama:</p>
+                    <div class="row">
+                        <div class="col-8">
+                            <ul class="list-group list-group-flush">
+                                @foreach (var item in Model.Regulations)
+                                {
+                                    <li class="list-group-item"><a href="@item.Url" target="_blank" rel="noopener">@String.Format("{0} - {1}", item.Name, item.Number)</a><span class="float-right"><small> Datum stupanja na snagu: @(item.RegulationEffectiveDate.HasValue ? item.RegulationEffectiveDate.Value.ToShortDateString(): string.Empty)</small></span></li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-9">
+                <p class="lead" style="font-size: 1.15em;">
+                    Tablični prikaz ukupne cestovne infrastrukture
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <table class="table table-sm table-striped table-bordered small display nowrap"
+                           width="100%" id="roadsTable">
+                        <thead>
+                            <tr>
+                                @if (isSigned)
+                                {
+                                    <th>Akcije</th>
+
+                                }
+                                <th>
+                                    Oznaka
+                                </th>
+                                <th>
+                                    Kategorija
+                                </th>
+                                <th class="text-center">
+                                    Opis
+                                </th>
+                                <th>
+                                    Duljina (NN)
+                                </th>
+                                <th>
+                                    Duljina (DOF)
+                                </th>
+                                <th data-toggle="tooltip" data-placement="top" title="Postotak od ukupne duljine cesta prema NN (nisu uključene planirane i nerazvrstane)">
+                                    % udio
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model.Roads)
+                            {
+                                <tr>
+                                    @if (isSigned)
+                                    {
+                                        <td>
+
+                                            <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                            <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="right" title="Izbriši" data-road-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                                        </td>
+                                    }
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Code)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RoadCategory.Name)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Description)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.SpatialNewslength)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.DigitalOrthophotoLength)
+                                    </td>
+                                    @{
+                                        var value = GetTotalPercentageValue(item.SpatialNewslength, Model.SpatialNewslengthTotalSum);
+
+                                        var styleValue = Math.Round(value, 0).ToString();
+
+                                        var style = String.Format("background-image: -webkit-linear-gradient(left, #29c272, #fff {0}%); background-image: -moz-linear-gradient(left, #29c272, #fff {0}%);", styleValue);
+                                        <text>
+                                            <td style="@style">
+                                                @value
+                                            </td>
+                                        </text>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="col-3">
+                <p class="lead" style="font-size: 1.15em;">
+                    Ceste po JLS
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    @await Html.PartialAsync("_RoadsByLocalAdministration", model: Model.LocalGovernmentAdministrations)
+                </div>
+                <br />
+            </div>
+        </div>
+        <br />
+        @if (isSigned)
+        {
+            <div class="row">
+                <div class="col-6">
+                    <p class="lead" style="font-size: 1.15em;">
+                        Duljina javnih cesta prema kategorijama
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <canvas id="publicRoads" width="800" height="300"></canvas>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <p class="lead" style="font-size: 1.15em;">
+                        Ukupna duljina planiranih i nerazvrstanih cesta
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <canvas id="privatePlannedRoads" width="800" height="300"></canvas>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+        let graphArrayDataLabelsSorted = @Html.Raw(Json.Serialize(sortedRoadCategory));
+        let graphArrayDataValuesSorted = @Html.Raw(Json.Serialize(sortedRoadCategorySum));
+
+        let graphArrayDataLabelsUnSorted = @Html.Raw(Json.Serialize(unSortedRoadCategory));
+        let graphArrayDataValuesUnSorted = @Html.Raw(Json.Serialize(unSortedRoadCategorySum));
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $("#selectLocalAdministration").on("keyup", function () {
+                let value = $(this).val().toLowerCase();
+                $("#listKZZ a").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+            let roadsTable = $('#roadsTable').DataTable({
+                dom: 'Bfrtip',
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                buttons: [{
+                    text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                    className: 'btn btn-outline-success',
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data',
+                    title: 'Tablica_' + dateToday
+                }],
+                bLengthChange: false,
+            });
+
+            let publicRoadID = document.getElementById('publicRoads');
+            let privatePlannedRoads = document.getElementById('privatePlannedRoads');
+
+            if (publicRoadID != null || privatePlannedRoads != null ) {
+                let sorted = publicRoadID.getContext('2d');
+                let unSorted = privatePlannedRoads.getContext('2d');
+
+                let sortedRoads = new Chart(sorted, {
+                    type: 'horizontalBar',
+                    data: {
+                        labels: graphArrayDataLabelsSorted,
+                        datasets: [{
+                            data: graphArrayDataValuesSorted,
+                            backgroundColor: "#4dac26",
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        legend: { position: 'top' },
+                        title: { display: true, text: '' },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: false,
+                            onHover: function (e) {
+                                e.target.style.cursor = 'pointer';
+                            }
+                        },
+                        tooltips: {
+                            enabled: true,
+                            callbacks: {
+                                label: function (tooltipItem, data) {
+                                    return `${data.labels[tooltipItem.index]}:  ${data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]} km`;
+                                }
+                            }
+                        },
+                        hover: {
+                            onHover: function (e) {
+                                let point = this.getElementAtEvent(e);
+                                if (point.length) e.target.style.cursor = 'pointer';
+                                else e.target.style.cursor = 'default';
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -10,
+                                borderWidth: 2,
+                                borderColor: '#fff',
+                                borderRadius: 25,
+                                backgroundColor: (con) => {
+                                    return con.dataset.backgroundColor;
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: '10'
+                                },
+                                formatter: (value) => {
+                                    let formatPerc = `${value} km`;
+                                    return formatPerc;
+
+                                }
+                            }
+                        }
+                    },
+                });
+                let unSortedRoads = new Chart(unSorted, {
+                    type: 'bar',
+                    data: {
+                        labels: graphArrayDataLabelsUnSorted,
+                        datasets: [{
+                            data: graphArrayDataValuesUnSorted,
+                            backgroundColor: ["#266cd8", '#d33'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        legend: { position: 'top' },
+                        title: { display: true, text: '' },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        },
+                        legend: {
+                            display: false,
+                            onHover: function (e) {
+                                e.target.style.cursor = 'pointer';
+                            }
+                        },
+                        tooltips: {
+                            enabled: true,
+                            callbacks: {
+                                label: function (tooltipItem, data) {
+                                    return `${data.labels[tooltipItem.index]}:  ${data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]} km`;
+                                }
+                            }
+                        },
+                        hover: {
+                            onHover: function (e) {
+                                let point = this.getElementAtEvent(e);
+                                if (point.length) e.target.style.cursor = 'pointer';
+                                else e.target.style.cursor = 'default';
+                            }
+                        },
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -10,
+                                borderWidth: 2,
+                                borderColor: '#fff',
+                                borderRadius: 25,
+                                backgroundColor: (con) => {
+                                    return con.dataset.backgroundColor;
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: '10'
+                                },
+                                formatter: (value) => {
+                                    let formatPerc = `${value} km`;
+                                    return formatPerc;
+
+                                }
+                            }
+                        }
+                    },
+                })
+            }
+
+            $("#roadsTable").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabranu cestu?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/Roads/DeleteRoad/";
+                            let id = button.attr("data-road-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    roadsTable.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        });
+    </script>
+
+}
+

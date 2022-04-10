@@ -1,0 +1,68 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.NaturalChangePopulation>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+<table class="table table-striped table-bordered small display nowrap" id="naturalChangePopulationTableLocalGovernment" style="width:100%">
+    <thead>
+        <tr>
+            <th rowspan="2" class="text-center">JLS</th>
+            <th colspan="3" class="text-center">Rođeni</th>
+            <th colspan="3" class="text-center">Umrli</th>
+            <th rowspan="2" class="text-center">Prirodni prirast</th>
+            <th rowspan="2" class="text-center">Vitalni indeks</th>
+            <th rowspan="2" class="text-center">Stopa Nataliteta</th>
+            <th rowspan="2" class="text-center">Stopa Mortaliteta</th>
+        </tr>
+        <tr>
+            <th>Živorođeni</th>
+            <th>Mrtvorođeni</th>
+            <th>Ukupno</th>
+            <th>Umrli</th>
+            <th>Umrla dojenčad</th>
+            <th>Ukupno</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.LocalGovernmentAdministration.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LiveBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StillBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Death)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InfantDeath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalDeathBirth)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NaturalIncrease)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VitalIndex)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.BirthRate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeathRate)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

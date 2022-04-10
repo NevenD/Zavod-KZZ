@@ -1,0 +1,40 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.SpatialPlanDocument>
+    <table class="table  small" id="spatialPlansList" style="width:100%">
+        <thead>
+            <tr>
+                <th align="center" >Općina/Grad</th>
+                <th align="center" >Vrsta plana</th>
+                <th align="center" >Naziv plana</th>
+                <th align="center" >Broj glasnika</th>
+                <th align="center" >Status plana</th>
+                <th align="center" >Detalji</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+
+                var className = GetPlanStatusClassStyle(item.SpatialPlanStatus.Name);
+                <tr>
+                    <td class="@className">
+                        @Html.DisplayFor(modelItem => item.LocalGovernmentAdministration.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SpatialPlanLevel.ShortName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.OfficialSpatialNewsNumber)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.SpatialPlanStatus.Name)
+                    </td>
+                    <td>
+                        <button class="btn btn-outline-primary btn-sm js-details" data-toggle="tooltip" data-placement="top" title="Detaljan pregled plana" data-spatial-plan-details="@item.Id"><i class="fas fa-info"></i></button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>

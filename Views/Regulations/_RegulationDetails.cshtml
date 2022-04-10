@@ -1,0 +1,59 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RegulationCreateVM
+@{ 
+    var publicationDate = Model.Regulation.RegulationPublicationDate.HasValue ? Model.Regulation.RegulationPublicationDate.Value.ToShortDateString() : string.Empty;
+    var effectiveDate = Model.Regulation.RegulationEffectiveDate.HasValue ? Model.Regulation.RegulationEffectiveDate.Value.ToShortDateString() : string.Empty;
+}
+<ul class="list-group">
+    <li class="list-group-item  flex-column align-items-start">
+        <div class="d-flex w-100 justify-content-between">
+            <h5 class="mb-1">@string.Format("{0} {1}", Model.Regulation.Name, Model.Regulation.Number)</h5>
+        </div>
+        <br />
+        <p class="mb-auto">Tip propisa: <b>@Model.Regulation.RegulationType.Name</b></p>
+        <hr />
+        <p class="mb-auto">Skraćeni naziv: <b>@Model.Regulation.ShortName</b></p>
+        <p class="mb-auto">Broj dokumenta: <b>@Model.Regulation.Number</b></p>
+        <hr />
+        <p class="mb-auto">Dodatni opis dokumenta:<br /> <b>@Model.Regulation.RegulationRemarks</b></p>
+        <hr />
+        <p class="mb-auto">Poveznica: <br/><a href="@Model.Regulation.Url" target="_blank" rel="noopener noreferrer"> @Model.Regulation.Url</a></p>
+        <hr />
+        <p class="mb-auto">Datum donošenja dokumenta:<b>@publicationDate</b></p>
+        <p class="mb-auto">Datum stupanja na snagu: <b>@effectiveDate</b></p>
+        <hr />
+        <p class="mb-auto">Domena propisa</p>
+        <br />
+        <div class="form-group col-md-12">
+            <div class="custom-control custom-switch">
+                <input asp-for="@Model.Regulation.IsSpatialDocumentRegulation" disaabled class="custom-control-input" id="IsSpatialDocumentRegulation" disabled>
+                <label class="custom-control-label" for="IsSpatialDocumentRegulation">Zakon o prostornom uređenju </label>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="custom-control custom-switch">
+                <input asp-for="@Model.Regulation.IsSortedRoadRegulation" disabled class="custom-control-input" id="IsSortedRoadRegulation">
+                <label class="custom-control-label" for="IsSortedRoadRegulation">Zakon o cestama  </label>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="custom-control custom-switch">
+                <input asp-for="@Model.Regulation.IsRailRoadRegulation" disabled class="custom-control-input" id="IsRailRoadRegulation">
+                <label class="custom-control-label" for="IsRailRoadRegulation">Zakon o željeznicama </label>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="custom-control custom-switch">
+                <input asp-for="@Model.Regulation.IsWaterSupplyRegulation" disabled class="custom-control-input" id="IsWaterSupplyRegulation">
+                <label class="custom-control-label" for="IsWaterSupplyRegulation">Zakon o vodi te vodoopskrbi i odvodnji </label>
+            </div>
+        </div>
+        <div class="form-group col-md-12">
+            <div class="custom-control custom-switch">
+                <input asp-for="@Model.Regulation.IsOtherRegulation" disabled class="custom-control-input" id="IsOtherRegulation">
+                <label class="custom-control-label" for="IsOtherRegulation">Ostalo </label>
+            </div>
+        </div>
+
+    </li>
+</ul>
+

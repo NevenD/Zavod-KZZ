@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+This file is used by the publish/package process of your Web project. You can customize the behavior of this process
+by editing this MSBuild file. In order to learn more about this please visit https://go.microsoft.com/fwlink/?LinkID=208121. 
+-->
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <TimeStampOfAssociatedLegacyPublishXmlFile />
+    <EncryptedPassword>AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAkITApV306E2Aee41o75y1gAAAAACAAAAAAAQZgAAAAEAACAAAACsi0UYaNhSnKv/4gYuZzmy+FOukAV9Cti5ezOES1hqDQAAAAAOgAAAAAIAACAAAADkAasSl7lZX6ZCS9uVrTicYT0ipw2Ht3cOcd2JJHU3HYAAAACuP+j+E4Zu7aQst0nqlcrfX4etUJVB1jjTyIGzm9SPeoaRGn40ZcC5uYsYrXG2WnRyOMIyRGegDLlje7cjZmcyHlphzBt+dljwkAY7WMeDyvlMUQp+TXnkX5siw0Iqsj2z4bF+iVmvicYjFzJLYVgURqMidIOUUrH0kp+YpLXKMUAAAADFCAWfz5wxOdlCNWkQO3yFTBkWOPGbE8kSBi4zMnNiCEvayC74YWnmjlJ2iLSRgXuLfNGa1/9A5I5xYCszNasz</EncryptedPassword>
+  </PropertyGroup>
+  <ItemGroup>
+    <DestinationConnectionStrings Include="DefaultConnection">
+      <Value>Data Source=tcp:zara-kzz.database.windows.net,1433%3bInitial Catalog=zaradb%3bUser Id=ZavodKZZ%40zara-kzz%3bPassword=ZavodSifra11</Value>
+    </DestinationConnectionStrings>
+  </ItemGroup>
+  <ItemGroup>
+    <EFMigrations Include="ZAVOD_KZZ.Data.ApplicationDbContext">
+      <Value>Data Source=tcp:zara-kzz.database.windows.net,1433%3bInitial Catalog=zaradb%3bUser Id=ZavodKZZ%40zara-kzz%3bPassword=ZavodSifra11</Value>
+    </EFMigrations>
+  </ItemGroup>
+</Project>

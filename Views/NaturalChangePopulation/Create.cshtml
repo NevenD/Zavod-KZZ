@@ -1,0 +1,204 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Population.CreateNaturalChangeVM
+
+@{
+    var optionsYears = Model.Years;
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var localGovernmentsCount = Model.LocalGovernmentAdministrations.Count();
+}
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+            <li class="breadcrumb-item"><a asp-controller="NaturalChangePopulation" asp-action="Index">Prirodna promjena</a>
+            <li class="breadcrumb-item active" aria-current="page">Prirodni prirast po JLS</li>
+        </ol>
+    </nav>
+    <br />
+    <div class="row">
+        <div class="col-5">
+            <div class="edit-administration-form">
+                <p class="lead">
+                    Postavke unosa
+                </p>
+                <p style="font-size: 0.95rem;font-weight: 200;">Odabirom željene godine postaviti će se odabrana godina na sve JLS. </p>
+                <hr />
+                <div class="form-group row">
+                    <label for="yearsOptions" class="col-sm-4 col-form-label" style="font-size: 0.95rem;font-weight: 200;">Odaberite godinu</label>
+                    <div class="col-sm-4">
+                        <select class="form-control" id="yearsOptions">
+                            @foreach (var year in Model.Years)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="edit-administration-form">
+                <div class="form-row lead" style="font-size: 1rem;">
+                    <div class="form-group col-md-3">
+                        <label>JLS</label>
+                    </div>
+                    <div class="form-group col-md-3">
+                        <label>Popisna godina</label>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label>Živorođeni</label>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label>Mrtvorođeni</label>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label>Umrli</label>
+                    </div>
+                    <div class="form-group col-md-1">
+                        <label>Umrli dojenčad</label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <div class="edit-administration-form">
+                @foreach (var localGovernment in Model.LocalGovernmentAdministrations)
+                {
+                    var formId = string.Format("post-form_{0}", localGovernment.Id);
+                    <form id="NaturalChangeForm_@localGovernment.Id" class="@formId" asp-action="Create" style="margin-bottom:-10px;">
+                        <div class="form-row">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group col-md-3">
+                                <input type="text" name="" value="@localGovernment.Name" disabled class="form-control" id="localGovernmentName_@localGovernment.Id" style="height:1.80rem; color:gray;">
+                                <input type="hidden" class="form-control input-group-sm" name="NaturalChangePopulation.LocalGovernmentAdministrationID" value="@localGovernment.Id">
+                            </div>
+                            <div class="form-group col-md-3">
+                                <select class="form-control" style="height:2.0rem;" name="NaturalChangePopulation.Year" id="naturalChangeYear_@localGovernment.Id">
+                                    @foreach (var year in Model.Years)
+                                    {
+                                        <option value="@year">@year</option>
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <input asp-for="NaturalChangePopulation.LiveBirth" style="height:1.80rem;" class="form-control" id="liveBirth_@localGovernment.Id" />
+                                <span asp-validation-for="NaturalChangePopulation.LiveBirth" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <input asp-for="NaturalChangePopulation.StillBirth" style="height:1.80rem;" class="form-control" id="stillBirth_@localGovernment.Id" />
+                                <span asp-validation-for="NaturalChangePopulation.StillBirth" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <input asp-for="NaturalChangePopulation.Death" style="height:1.80rem;" class="form-control"  id="death_@localGovernment.Id" />
+                                <span asp-validation-for="NaturalChangePopulation.Death" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-1">
+                                <input asp-for="NaturalChangePopulation.InfantDeath" style="height:1.80rem;" class="form-control" id="infantDeath_@localGovernment.Id" />
+                                <span asp-validation-for="NaturalChangePopulation.InfantDeath" class="text-danger"></span>
+                            </div>
+                            <div class="form-group">
+                                <button type="button" id="naturalChange_@localGovernment.Id" data-jls-id="@localGovernment.Id" class="btn btn-outline-success btn-sm post-form"><i class="fa fa-check"></i> Pohrani </button>
+                            </div>
+                        </div>
+                    </form>
+                }
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+
+<script>
+
+        let localGovernmentsNumber = @Html.Raw(Json.Serialize(localGovernmentsCount));
+        $("#yearsOptions").change(function () {
+
+            let selectedYear = $(this).val();
+            for (i = 1; i < localGovernmentsNumber + 1; i++) {
+                let selectYearElementId = `#naturalChangeYear_${i}`
+                $(selectYearElementId).val(selectedYear);
+            }
+
+        });
+
+        $(".post-form").click(function () {
+            let id = $(this).attr("data-jls-id");
+            let formId = `#NaturalChangeForm_${id}`;
+            let formHtml = $(formId);
+            let isValid = $(formHtml).valid();
+            if (isValid) {
+                let url = formHtml.attr('action');
+                let formData = formHtml.serialize();
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function (data) {
+                        let msg = "";
+                        let classButton = "";
+                        if (data.error) {
+                            msg = `<div class='alert alert-danger text-center' role='alert'>${data.error}</div>`;
+                            classButton = "btn-danger";
+                        }
+
+                        if (data.localGovernmentName) {
+                            msg = `<div class='alert alert-succes text-center' style='color:#33383a;' role='alert'> Uspješno uneseni podaci za JLS <b>${data.localGovernmentName}</b> za <b>${data.year}</b> godinu. </div>`;
+                            classButton = "btn-success";
+                        }
+                        bootbox.dialog({
+                            centerVertical: true,
+                            message: msg,
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Zatvori',
+                                    className: classButton
+                                }
+                            },
+                        });
+                    },
+                    error: function (data) {
+                        console.log(data);
+                        bootbox.dialog({
+                            centerVertical: true,
+                            message: `<p class="text-center text-danger mb-0"><i class="fa fa-spin fa-cog"></i>Došlo je do greške..</p>`,
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Zatvori',
+                                    className: 'btn-error'
+                                }
+                            },
+                        });
+                    }
+                });
+            } else {
+                bootbox.alert({
+                    centerVertical: true,
+                    message: "<div class='alert alert-danger text-center' role='alert'>Popunite obavezna polja!</div>",
+                    className: 'shake animated',
+                    buttons: {
+                        ok: {
+                            label: '<i class="fa fa-check"></i> Zatvori',
+                            className: 'btn-danger'
+                        }
+                    },
+                });
+            }
+        });
+
+</script>
+}

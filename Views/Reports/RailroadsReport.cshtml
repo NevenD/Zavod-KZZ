@@ -1,0 +1,71 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Reports.RailroadsReportVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item" aria-current="page">Izrada izvješća</li>
+        <li class="breadcrumb-item active" aria-current="page">Željeznice</li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-md-4 offset-md-3">
+        <p class="lead">
+            Izrada izvješća po kategoriji željeznice
+        </p>
+        <hr />
+        <form asp-action="Create">
+            <div class="edit-administration-form">
+                <div class="form-row">
+                    <div class="form-group col-md-8 offset-md-2">
+                        <select class="form-control" id="railroadsList" asp-items="@(new SelectList(Model.RailroadCategories, nameof(RailroadCategory.Id), nameof(RailroadCategory.Name)))">
+                            <option value="" selected="">Odaberite kategoriju</option>
+                            <option value="0">Sve</option>
+                        </select>
+
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-success" id="railroadReport"><i class="fa fa-check"></i> Izradi izvješće</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+    <script>
+
+        $(document).ready(function () {
+            $("#railroadReport").click(function (e) {
+                e.preventDefault();
+                let railroadCategoryId = $("#railroadsList").val();
+                let url = "/Reports/GetNaturalChangeByLocalGovernment/";
+                if (railroadCategoryId == "") {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger text-center' role='alert'>Odaberite kategoriju željeznice</div>",
+                        className: 'shake animated',
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Ispravi',
+                                className: 'btn-danger'
+                            }
+                        },
+                    });
+                } else {
+                    window.location.href = `${url}?railroadCategoryId=${railroadCategoryId}`;
+                    //https://stackoverflow.com/questions/47134698/get-excel-file-xlsx-from-server-response-in-ajax
+                }
+
+            });
+        });
+    </script>
+
+}

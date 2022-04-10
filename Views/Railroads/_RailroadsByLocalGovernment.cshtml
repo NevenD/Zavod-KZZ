@@ -1,0 +1,26 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.LocalGovernmentAdministration>
+
+<input class="form-control" id="selectLocalAdministration" type="text" placeholder="Pretražite JLS po nazivu ili MBR.." autocomplete="off">
+<br />
+<div id="listKZZ" class="list-group kzz-list-group edit-administration-form" style="max-height: 464px;">
+    @foreach (var item in Model)
+    {
+        var isCity = item.IsAdministrativeCity == true;
+
+        <a asp-action="Details" asp-route-Id="@item.Id" asp-controller="RailroadLocalGovernment" class="list-group-item list-group-item-action flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                @if (isCity)
+                {
+                    <h6 class="mb-1" style="font-size: 1rem;">Grad: @item.Name</h6>
+                }
+                else
+                {
+                    <h6 class="mb-1" style="font-size: 1rem;">Općina: @item.Name</h6>
+                }
+                <small class="text-muted">MBR: @item.CodeNumber</small>
+            </div>
+            <small class="text-muted">Klikni za detalje</small>
+        </a>
+    }
+</div>
+

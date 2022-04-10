@@ -1,0 +1,24 @@
+﻿<script>
+    //#region MAP CUSTOM BUTTONS
+    let buttonSettings = document.createElement('button');
+    buttonSettings.innerHTML = '<i class="fa fa-cogs"></i>';
+    buttonSettings.setAttribute("data-toggle", "tooltip");
+    buttonSettings.setAttribute("data-placement", "right");
+    buttonSettings.title = "Postavke karte";
+    let handleSettings = function (e) {
+        $('#settingsMap').modal('show');
+    };
+
+    buttonSettings.addEventListener('click', handleSettings, false);
+
+    let elementSettings = document.createElement('div');
+    elementSettings.className = 'properties-modal  ol-control';
+    elementSettings.appendChild(buttonSettings);
+
+    let settingsControl = new ol.control.Control({
+        element: elementSettings
+    });
+
+    map.addControl(settingsControl);
+   //#endregion MAP CUSTOM BUTTONS
+</script>

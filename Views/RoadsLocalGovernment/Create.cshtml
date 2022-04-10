@@ -1,0 +1,146 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RoadsLocalGovernmentVM
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var roads = Model.Roads;
+
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+            <li class="breadcrumb-item"><a asp-controller="Roads" asp-action="Index">Cestovna infrastruktura</a>
+            <li class="breadcrumb-item active" aria-current="page">Dodaj cestu</li>
+        </ol>
+    </nav>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create" id="roadsLocalGovernmentForm">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Osnovni podaci o cesti
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Jedinica lokalne samouprave </label>
+                                <select class="form-control" asp-for="RoadLocalGovernment.LocalGovernmentAdministrationID" asp-items="@(new SelectList(Model.LocalGovernmentAdministrations, nameof(LocalGovernmentAdministration.Id), nameof(LocalGovernmentAdministration.Name)))">
+                                    <option value="" selected="">Odaberite JLS</option>
+                                </select>
+                                <span asp-validation-for="RoadLocalGovernment.LocalGovernmentAdministrationID" class="text-danger"></span>
+                            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Odaberite cestu </label>
+                                <select class="form-control" asp-for="RoadLocalGovernment.RoadID" id="roadList" asp-items="@(new SelectList(Model.Roads, nameof(Road.Id), nameof(Road.Code)))">
+                                    <option value="" selected="">Odaberite cestu</option>
+                                </select>
+                                <span asp-validation-for="RoadLocalGovernment.RoadID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Opis odabrane ceste </label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input disabled id="roadDescription" style="color: gray;" class="form-control" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <p class="lead">
+                        Duljina ceste u jedinici lokalne samouprave
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label asp-for="RoadLocalGovernment.RoadLength" class="control-label">Duljina (NN) *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input autocomplete="off" asp-for="RoadLocalGovernment.RoadLength" class="form-control" />
+                                </div>
+                                <span asp-validation-for="RoadLocalGovernment.RoadLength" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Roads"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                    <a class="btn btn-outline-success" href="#" role="button" id="savingRoadsLocalGovernment"><i class="fa fa-check"></i> Pohrani </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+
+<script>
+    let roads = @Html.Raw(Json.Serialize(roads));
+
+        $('#roadList').on('change', function () {
+
+            if (this.value != "") {
+                let road = roads.find(r => { return r.id == this.value });
+                $("#roadDescription").val(`${road.description} - ${road.spatialNewslength}km`);
+            } else {
+                $("#roadDescription").val("");
+            }
+        });
+
+        $("#savingRoadsLocalGovernment").click(function () {  // your submit button id
+            let isValid = $("#roadsLocalGovernmentForm").valid();
+            if (isValid) {
+
+                let roadsFormData = $("#roadsLocalGovernmentForm").serialize();
+                let url = "/RoadsLocalGovernment/Create";
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: roadsFormData,
+                    success: function () {
+                        bootbox.alert({
+                            centerVertical: true,
+                            message: "<div class='alert alert-success text-center' role='alert'>Cesta uspješno dodana</div>",
+                            size: 'small',
+                            closeButton: false
+                        });
+                        setTimeout(() => {
+                            location.reload();
+                        }, 1000)
+                    }
+                })
+
+
+            } else {
+                bootbox.alert({
+                    centerVertical: true,
+                    message: "<div class='alert alert-danger text-center' role='alert'>Popunite obavezna polja!</div>",
+                    className: 'shake animated',
+                    buttons: {
+                        ok: {
+                            label: '<i class="fa fa-check"></i> Ispravi',
+                            className: 'btn-danger'
+                        }
+                    },
+                });
+            }
+        });
+</script>
+
+}

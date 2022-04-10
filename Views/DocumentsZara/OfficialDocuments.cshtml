@@ -1,0 +1,271 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.OfficialZaraDocumentsVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var isSigned = SignInManager.IsSignedIn(User);
+    var lastAddedDateValue = (Model.OfficialDocumentsZara.OrderByDescending(x => x.DateAdded).FirstOrDefault() != null)
+      ? Model.OfficialDocumentsZara.OrderByDescending(x => x.DateAdded).FirstOrDefault().DateAdded.Value.ToShortDateString() : "Nije dostupno";
+
+    var lastAdded = Model.OfficialDocumentsZara.OrderByDescending(x => x.Id).FirstOrDefault();
+
+    var containerClass = string.Empty;
+
+    var inValidDocuments = Model.OfficialDocumentsZara.Where(x => x.DocumentStatusZaraId == (int)Enums.ZaraDocumentStatus.INVALID);
+    var validDocuments = Model.OfficialDocumentsZara.Where(x => x.DocumentStatusZaraId != (int)Enums.ZaraDocumentStatus.INVALID);
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<div class="@containerClass">
+    @if (isSigned)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                <li class="breadcrumb-item" aria-current="page">Dokumenti</li>
+                <li class="breadcrumb-item" aria-current="page">Akti</li>
+            </ol>
+        </nav>
+        <div class="row">
+            <div class="col-md-4">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Dodavanje dokumenata strateškog planiranja
+                    </p>
+                    <hr />
+                    <p style="font-size: 0.95rem;font-weight: 200;">Uz dodavanje osnovnih informacija o dokumentu strateškog planiranja, omogućeno je pohranjivanje i popratne dokumentacije u .pdf formatu.</p>
+                    <a asp-controller="DocumentsZara" asp-action="Create" class="btn btn-outline-secondary btn-sm btn-block"><i class="fas fa-plus"></i> Dodaj dokument</a>
+                </div>
+            </div>
+            <div class="col-md-4 offset-4">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Zadnje unesen dokument
+                    </p>
+                    <hr />
+                    @if (lastAdded != null)
+                    {
+
+                        <div class="media">
+                            <div class="align-self-center mr-3"><i style="color:#adb5bd;" class="far fa-file-alt fa-3x"></i></div>
+                            <div class="media-body">
+                                <h6 class="mt-0">Naziv dokumenta: @lastAdded.Name</h6>
+                                <p class="mb-0">Datum unosa: @lastAdded.DateAdded.Value.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Trenutačno nema unesenih akata</p>
+                    }
+
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+    else
+    {
+        <br />
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item"><a asp-controller="Documents" asp-action="Index">Dokumenti</a>
+                <li class="breadcrumb-item"><a asp-controller="DocumentsZara" asp-action="Index">ZARA</a>
+                <li class="breadcrumb-item active" aria-current="page">Strateško planiranje</li>
+            </ol>
+        </nav>
+    }
+    <br />
+    <p class="lead">
+        Registar dodanih akata
+        @if (!isSigned)
+        {
+            <span class="float-right"><small>Zadnje ažuriranje: @lastAddedDateValue</small></span>
+        }
+    </p>
+    <hr />
+
+
+    <br />
+    <div class="row">
+        <div class="col-8">
+            <div class="edit-administration-form">
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#officialDocuments" aria-expanded="true" aria-controls="officialDocuments">
+                                    <i class="fa fa-table" aria-hidden="true"></i> Pregled dokumenata strateškog planiranja
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="officialDocuments" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample" style="font-size: 1.15em;">
+                            <div class="card-body">
+                                <div style="display: flex;align-items: center;">
+                                    <p class="lead spatial-status-valid" style="margin-left: 20px;">
+                                        <span style="margin-left: 7px;">Dokument na snazi</span>
+                                    </p>
+                                    <p class="lead spatial-status-inprogress" style="margin-left: 20px;">
+                                        <span style="margin-left: 7px;">Dokument u izradi</span>
+                                    </p>
+                                </div>
+                                <hr />
+                                @await Html.PartialAsync("_OfficialDocumentsTable", model: validDocuments)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="edit-administration-form">
+                <p class="lead spatial-status-invalid" style="font-size: 1.1em; margin-left:0.6rem;">
+                    <span style="margin-left: 7px;">Dokument van snage</span>
+                </p>
+                <hr />
+                <div class="timeline-container">
+                    @if (inValidDocuments.Any())
+                    {
+                        <ul class="timeline" style="margin-right:10px">
+                            @foreach (var invalid in inValidDocuments)
+                            {
+                            <li style="margin-bottom: 30px;">
+                                <p><b>@invalid.Name</b></p>
+                                <hr style="margin-top:-10px;" />
+                                <p class="spatial-plans-list">Glasnik:  <b>@invalid.OfficalSpatialNews.ShortName  @invalid.OfficialSpatialNewsNumber</b></p>
+                                @if (string.IsNullOrEmpty(invalid.OfficialSpatialNewsNumberUrl))
+                                {
+                                    <p class="spatial-plans-list">Veza na glasnik:   </p>
+                                }
+                                else
+                                {
+                                    <p class="spatial-plans-list">Veza na glasnik: <a href="@invalid.OfficialSpatialNewsNumberUrl" target="_blank" rel=”noreferrer”>Poveznica</a></p>
+                                }
+
+                                @if (invalid.DocumentIneffectiveDate.HasValue)
+                                {
+                                    <p class="spatial-plans-list">Datum stupanja van snage: <b>@invalid.DocumentIneffectiveDate.Value.ToShortDateString()</b></p>
+                                }
+                                else
+                                {
+                                    <p class="spatial-plans-list">Datum stupanja van snage: <b>Nije dostupan</b></p>
+                                }
+                            <p class="spatial-plans-list">
+                                <button class="btn btn-outline-primary btn-sm js-details" data-officialDocument-details="@invalid.Id" data-toggle="tooltip" data-placement="right" title="Detalji"><i class="fas fa-info"></i></button>
+                                @if (isSigned)
+                                {
+                                    <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@invalid.Id"><i class="fas fa-edit"></i></a>
+                                }
+                            </p>
+                            </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <ul class="timeline" style="margin-right:10px">
+                            <li style="margin-bottom: 30px;">
+                                <p><b>Trenutačno nema podataka</b></p>
+                            </li>
+                        </ul>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+</div>
+<style>
+    .form-group label {
+        font-weight: 600;
+    }
+
+    .form-group {
+        margin-bottom: unset;
+    }
+</style>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+
+
+    <script>
+        $(document).ready(function () {
+            $('#collapseOne').collapse({
+                toggle: true
+            });
+
+            $('[data-toggle="tooltip"]').tooltip();
+            let officialDocumentsZara =  $('#officialDocumentsZara').DataTable({
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                bLengthChange: false,
+            });
+
+            $("#officialDocumentsZara").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite odabrani unos?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/DocumentsZara/DeleteAll/";
+                            let id = button.attr("data-official-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    officialDocumentsZara.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(".js-details").click(function () {
+                let url = "/DocumentsZara/Details/";
+                let id = $(this).attr("data-officialDocument-details");
+                $.ajax({
+                    type: "GET",
+                    url: `${url}${id}`,
+                    success: function (data) {
+                        bootbox.dialog({
+                            message: data,
+                            scrollable: true,
+                            size: 'large',
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Završi',
+                                    className: 'btn-success'
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

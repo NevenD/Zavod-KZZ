@@ -1,0 +1,97 @@
+﻿
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .map {
+        height: 500px;
+        width: 100%;
+    }
+
+    .zoom:hover {
+        cursor: pointer;
+        -ms-transform: scale(1.05); /* IE 9 */
+        -webkit-transform: scale(1.05); /* Safari 3-8 */
+        transform: scale(1.05);
+    }
+
+    .zoom {
+        transition: transform .2s;
+    }
+
+    .middle {
+        transition: .5s ease;
+        opacity: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        text-align: center;
+    }
+
+    .image-overlay {
+        transition: .5s ease;
+        opacity: 1;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+        text-align: center;
+        font-weight: 600;
+        color: white;
+        text-shadow: 5px 5px 10px black;
+    }
+
+    .image {
+        opacity: 1;
+        transition: .5s ease;
+        backface-visibility: hidden;
+    }
+
+    .container-hover:hover .image {
+        opacity: 0.3;
+    }
+
+    .container-hover:hover .middle {
+        opacity: 1;
+    }
+
+    .container-hover:hover .image-overlay {
+        opacity: 0;
+    }
+
+    .text {
+        background-color: #4CAF50;
+        color: white;
+        font-size: 16px;
+        padding: 16px 32px;
+    }
+</style>
+<br />
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+            <li class="breadcrumb-item"><a asp-controller="Documents" asp-action="Index">Dokumenti</a>
+            <li class="breadcrumb-item active" aria-current="page">ZARA</li>
+        </ol>
+    </nav>
+    <div class="row mb-2">
+        <div class="col-md-6 zoom">
+            <div class="card container-hover">
+                <img class="bd-placeholder-img bd-placeholder-img-lg card-img image" width="100%" height="270" src="~/images/document_acts.jpg" />
+                <div class="card-img-overlay image-overlay">
+                    <h3 class="card-title lead text-center"><i class="far fa-file-pdf fa-3x"></i></h3>
+                    <h6 class="card-title text-center" style="font-size:1.45em;">Strateško planiranje</h6>
+                </div>
+                <div class="middle">
+                    <a type="button" class="btn btn-outline-dark lead" asp-controller="DocumentsZara" asp-action="Index"><i class="fas fa-info"></i>&nbsp;&nbsp;Klikni za više</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

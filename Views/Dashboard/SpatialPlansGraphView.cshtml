@@ -1,0 +1,262 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.DashboardSpatialPlansGraphVM
+@{
+    ViewData["Title"] = "SpatialDocument";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var dateToday = DateTime.Now.ToShortDateString();
+    var thisYear = DateTime.Now.Year.ToString();
+
+    var planLevelDataLabels = Model.SpatialPlansLevelChartVM.SpatialPlansCategory.ToArray();
+    var planLeveDataValues = Model.SpatialPlansLevelChartVM.SpatialPlansCount.ToArray();
+
+    var localAdministrationDataLabels = Model.SpatialPlansLocalAdministrationChartVM.LocalAdministrationName.ToArray();
+    var localAdministrationDataValue = Model.SpatialPlansLocalAdministrationChartVM.SpatialPlansCount.ToArray();
+
+    var spatialPlansPerYearDataLabels = Model.PlansPerYearLineChart.SpatialPlanYear.ToArray();
+    var spatialPlansPerYearDataValue = Model.PlansPerYearLineChart.SpatialPlansCountPerYear.ToArray();
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Prostorni planovi</li>
+        <li class="breadcrumb-item active" aria-current="page">Prikaz grafikona</li>
+    </ol>
+</nav>
+<br />
+<div class="row">
+    <div class="col-xl-6">
+        <div class="edit-administration-form">
+            <div class="accordion" id="allPlans">
+                <div class="card">
+                    <div class="card-header" id="GraphOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#levelOfPlans" aria-expanded="true" aria-controls="levelOfPlans">
+                                <i class="fas fa-chart-bar"></i> Broj važeće prostorno planske dokumentacije prema razini plana
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="levelOfPlans" class="collapse show" aria-labelledby="GraphOne" data-parent="#levelOfPlans">
+                        <div class="card-body">
+                            <canvas id="planLevel" width="800" height="450"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-6">
+        <div class="edit-administration-form">
+            <div class="accordion" id="allPlans">
+                <div class="card">
+                    <div class="card-header" id="plansByJLS">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#plansByJLSList" aria-expanded="true" aria-controls="plansByJLSList">
+                                <i class="fas fa-chart-bar"></i> Prikaz važećih planova po JLS
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="plansByJLSList" class="collapse show" aria-labelledby="plansByJLS" data-parent="#allPlans">
+                        <div class="card-body">
+                            <canvas id="plans-By-JLS" width="800" height="450"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xl-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="accordionExample2">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne2" aria-expanded="true" aria-controls="collapseOne2">
+                                <i class="fas fa-chart-line"></i> Prikaz planova po godinama
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseOne2" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample2">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-12">
+                                    <canvas id="plansByYear" width="800" height="250"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts{
+    <script>
+        let todayDate = @Html.Raw(Json.Serialize(dateToday));
+        let graphPlanLevelDataLabels = @Html.Raw(Json.Serialize(planLevelDataLabels));
+        let graphPlanLevelDataValues = @Html.Raw(Json.Serialize(planLeveDataValues));
+
+        let graphPlanLocalAdministrationDataLabels = @Html.Raw(Json.Serialize(localAdministrationDataLabels));
+        let graphPlanCountDataValues = @Html.Raw(Json.Serialize(localAdministrationDataValue));
+
+        let graphSpatailPlansPerYearDataLabels = @Html.Raw(Json.Serialize(spatialPlansPerYearDataLabels));
+        let graphSpatailPlansPerYearValue = @Html.Raw(Json.Serialize(spatialPlansPerYearDataValue));
+
+        let planLevel = document.getElementById('planLevel').getContext('2d');
+        let planAdministration = document.getElementById('plans-By-JLS').getContext('2d');
+        let plansPerYear = document.getElementById('plansByYear').getContext('2d');
+
+
+        new Chart(planLevel, {
+                type: 'horizontalBar',
+                data: {
+                  labels: graphPlanLevelDataLabels,
+                  datasets: [
+                    {
+                      label: "Broj planova ",
+                      backgroundColor: "#29c272",
+                      data: graphPlanLevelDataValues
+                    }
+                  ]
+                },
+                    options: {
+                             scales: {
+                    xAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                  legend: { display: false },
+                  title: {
+                    display: true,
+                    text: `Prostorno planska dokumentacija sa stanjem ${todayDate}`
+                        },
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -10,
+                                borderWidth: 2,
+                                borderColor: '#fff',
+                                padding: 5,
+                                borderRadius: 100,
+                                backgroundColor: (con) => {
+                                    return con.dataset.backgroundColor;
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: '11'
+                                }
+                            }
+                        }
+
+                }
+        });
+        new Chart(planAdministration, {
+                type: 'bar',
+                data: {
+                  labels: graphPlanLocalAdministrationDataLabels,
+                  datasets: [
+                    {
+                      label: "Broj planova ",
+                      backgroundColor: "#29c272",
+                      data: graphPlanCountDataValues
+                    }
+                  ]
+                },
+                    options: {
+                             scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                },
+                  legend: { display: false },
+                  title: {
+                    display: true,
+                    text: `Prostorno planska dokumentacija  po JLS sa stanjem ${todayDate}`
+                        },
+                        plugins: {
+                            datalabels: {
+                                color: '#fff',
+                                anchor: 'end',
+                                align: 'start',
+                                offset: -10,
+                                borderWidth:2 ,
+                                borderColor: '#fff',
+                                padding:5,
+                                borderRadius: 100,
+                                backgroundColor: (con) => {
+                                    return con.dataset.backgroundColor;
+                                },
+                                font: {
+                                    weight: 'bold',
+                                    size: '11'
+                                }
+                            }
+                        }
+
+                }
+        });
+        new Chart(plansPerYear, {
+            type: 'line',
+            data: {
+                labels: graphSpatailPlansPerYearDataLabels,
+                datasets: [{
+                    label: 'Broj donesenih planova po godinama',
+                    data: graphSpatailPlansPerYearValue,
+                    fill: false,
+                    backgroundColor: '#fff',
+                    borderColor: [
+                        '#29c272',
+                    ],
+                    borderWidth: 1,
+                    pointRadius: 6,
+                    pointBorderColor: "#29c272",
+                    pointBackgroundColor: "#29c272",
+                    pointHoverRadius: 8,
+
+                }]
+            },
+            options: {
+                legend: {
+                   fillStyle: 'none',
+                  onHover: function(event, legendItem) {
+                    document.getElementById("lineYearChart").style.cursor = 'pointer';
+                  }
+                },
+                tooltips: {
+                    mode: 'label',
+                },
+                hover: {
+                  onHover: function(e, el) {
+                    $("#lineYearChart").css("cursor", el[0] ? "pointer" : "default");
+                  }
+                },
+                plugins: {
+                    datalabels: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+}
+

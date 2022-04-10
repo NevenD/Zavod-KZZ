@@ -1,0 +1,35 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.SpatialPlannersDetailsVM
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+    <ul class="list-group">
+        <li class="list-group-item  flex-column align-items-start">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">@Model.SpatialPlanner.Name</h5>
+                <small>Lokacija: @Model.SpatialPlanner.Location</small>
+            </div>
+            <br />
+            <hr />
+            <p class="mb-3"><b>Kontakt telefon:</b><br /> @Model.SpatialPlanner.Phone</p>
+            <p class="mb-3"><b>Adresa:</b><br /> @Model.SpatialPlanner.Address</p>
+            <p class="mb-3"><b>E-mail:</b><br /> @Model.SpatialPlanner.Email</p>
+            <p class="mb-3"><b>Web:</b><br /> @Model.SpatialPlanner.WebAdress</p>
+
+            <hr />
+            <p class="mb-3">Popis planova:</p>
+            @if (Model.SpatialPlanDocuments.Count() > 0)
+            {
+                @foreach (var plan in Model.SpatialPlanDocuments)
+                {
+                    <p class="mb-3"><small><b>@plan.Name</b></small></p>
+                }
+
+            }
+            else
+            {
+            <p class="mb-3"><b>Nema zabilježenih planova</b><br /></p>
+            }
+        </li>
+   </ul>
+

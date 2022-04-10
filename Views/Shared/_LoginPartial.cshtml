@@ -1,0 +1,29 @@
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+    <ul class="navbar-nav">
+        @if (SignInManager.IsSignedIn(User))
+        {
+            @*<li class="nav-item">
+                <a class="nav-link text-dark" asp-area="Identity" asp-page="/Account/Manage/Index" title="Manage"><i class="fas fa-tachometer-alt"></i> Admin dio</a>
+            </li>*@
+            <li class="nav-item">
+                <a class="nav-link text-muted" asp-controller="Dashboard" asp-action="Index" title="Upravljačka ploča"><i class="fa fa-home"></i> Upravljačka ploča</a> 
+            </li>
+            <li class="nav-item">
+                <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                    <button type="submit" class="nav-link btn btn-link text-muted"><i class="fas fa-sign-out-alt"></i> Odjava</button>
+                </form>
+            </li>
+        }
+        else
+        {
+            <li class="nav-item">
+                <a class="nav-link text-muted" asp-area="Identity" asp-page="/Account/Register"><i class="fa fa-user-plus"></i> Registracija</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-muted" asp-area="Identity" asp-page="/Account/Login"><i class="fa fa-sign-in-alt"></i> Prijava</a>
+            </li>
+        }
+    </ul>

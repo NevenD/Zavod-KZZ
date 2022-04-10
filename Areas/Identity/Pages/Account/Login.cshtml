@@ -1,0 +1,51 @@
+﻿@page
+@model LoginModel
+@{
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+}
+<div class="col-4 mx-auto" style="margin-top:10%;">
+    <p class="lead text-center" style="font-size:1.6em;">
+        Prijava za registar prostornih podataka
+    </p>
+    <hr />
+    <form id="account" method="post">
+        <div class="edit-administration-form">
+            <div class="form-group">
+                <label>Korisničko ime</label>
+                <input asp-for="Input.FirstName" class="form-control" />
+                <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label>Zaporka</label>
+                <input asp-for="Input.Password" class="form-control" />
+                <span asp-validation-for="Input.Password" class="text-danger"></span>
+            </div>
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group text-center">
+                <div class="checkbox">
+                    <label asp-for="Input.RememberMe">
+                        <input asp-for="Input.RememberMe" />
+                        @Html.DisplayNameFor(m => m.Input.RememberMe)
+                    </label>
+                </div>
+            </div>
+            <div class="form-group text-center">
+                <button type="submit" class="btn btn-outline-success"><i class="fa fa-sign-in-alt"></i> Prijavite se</button>
+            </div>
+            @*<div class="form-group">
+                <p>
+                    <a id="forgot-password" asp-page="./ForgotPassword">Zaboravili ste lozinku?</a>
+                </p>
+            </div>*@
+        </div>
+    </form>
+    <br />
+    <div class="form-group text-center">
+        <a class="btn btn-outline-secondary" asp-controller="Home" asp-action="Index"><span class="fas fa-arrow-left mr-1"></span> Povratak na aplikaciju</a>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

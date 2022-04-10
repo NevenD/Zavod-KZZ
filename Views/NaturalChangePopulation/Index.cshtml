@@ -1,0 +1,385 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Population.NaturalChangeVM
+@{
+
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    var isSigned = SignInManager.IsSignedIn(User);
+    var lastAdded = Model.NaturalChangePopulation.OrderByDescending(x => x.Id).FirstOrDefault();
+    var lastAddedDateValue = (Model.NaturalChangePopulation.OrderByDescending(x => x.Id).FirstOrDefault() != null)
+? Model.NaturalChangePopulation.OrderByDescending(x => x.DateAdded).FirstOrDefault().DateAdded.Value.ToShortDateString() : "Nije dostupno";
+
+
+
+    var lastYear = (Model.NaturalChangeByYear.Any()) ? Model.NaturalChangeByYear.Max(x => x.Year).ToString() : "-";
+    var firstYear = (Model.NaturalChangeByYear.Any()) ? Model.NaturalChangeByYear.Min(x => x.Year).ToString() : "-";
+
+    var labelData = (Model.NaturalChangeGraphData != null) ? Model.NaturalChangeGraphData.Labels : null;
+    var chartData = (Model.NaturalChangeGraphData != null) ? Model.NaturalChangeGraphData.NaturalChangeDataSets : null;
+
+    var containerClass = string.Empty;
+
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+<div class="@containerClass">
+    @if (isSigned)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                <li class="breadcrumb-item" aria-current="page">Stanovništvo</li>
+                <li class="breadcrumb-item" aria-current="page">Prirodna promjena</li>
+            </ol>
+        </nav>
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h6 class="modal-title" id="exampleModalLabel">Opis obrade</h6>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="card" style="font-size:12px;">
+                            <img src="~/images/descriptionNaturalChange.png" class="img-fluid" alt="Responsive image">
+                            <div class="card-body">
+                                <p class="card-text">Prije slanja excel dokumenta na obradu potrebno je napraviti sljedeće korake.</p>
+                                <hr />
+                                <ul class="list-group list-group-flush">
+                                    <li class="list-group-item">Dokument mora biti u .xlsx, .xls ili u .csv formatu</li>
+                                    <li class="list-group-item">Nazivi stupca moraju biti od kolone <b>A do kolone F u prvom redu</b></li>
+                                    <li class="list-group-item">Redosljed stupaca mora biti sljedeći: <b>JLS, godina, živorođeni, mrtvorođeni, umrli i umrla dojenčad.</b></li>
+                                    <li class="list-group-item">Ako šaljemo više godina onda je nužno da svaka godina bude u <b>zasebnoj excel datoteci</b></li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Zatvori</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-7">
+                <form method="post" asp-action="ReadExcelData" enctype="multipart/form-data" id="documentSave">
+                    <div class="edit-administration-form">
+                        <p class="lead">
+                            Grupni unos prirodnog kretanja stanovništva za JLS
+                        </p>
+                        <hr />
+                        <p style="font-size: 0.95rem;font-weight: 200;">Prije pohranjivanja i obrade tabličnih podataka kliknite na <button type="button" style="margin-bottom:5px;" class="btn btn-outline-info btn-sm"><i class="fas fa-info"></i></button> za više informacija </p>
+                        <div class="form-row">
+                            <div class="form-group col-md-1">
+                                <button type="button" data-toggle="modal" data-target="#exampleModal" class="btn btn-outline-info"><i class="fas fa-info"></i></button>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <div class="input-group mb-3 upload-documents">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
+                                    </div>
+                                    <div class="custom-file">
+                                        <input type="file" asp-for="File" accept=".xlsx, .xls, .csv" class="form-control custom-file-input" id="graphicDocument" aria-describedby="inputGroupFileAddon01">
+                                        <label id="graphicDocText" class="custom-file-label" for="inputGroupFile01">Odaberite dokument</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group col-md-5">
+                                <button type="button" id="removeDocument" class="btn btn-outline-danger" disabled><i class="far fa-trash-alt"></i> Izbriši</button>
+                                <button type="submit" id="savingDocument" class="btn btn-outline-success" disabled><i class="fa fa-check"></i> Pohrani</button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-5">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Zadnji unos
+                    </p>
+                    <hr />
+
+                    @if (lastAdded != null)
+                    {
+
+                        <div class="media">
+                            <div class="align-self-center mr-3"><i style="color:#adb5bd;" class="fas fa-users fa-3x"></i></div>
+                            <div class="media-body">
+                                <h6 class="mt-0">Zadnje unesena popisna godina: @lastAdded.Year</h6>
+                                <p class="mb-0">Datum unosa: @lastAdded.DateAdded.Value.ToShortDateString()</p>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <p>Trenutačno nema unosa</p>
+                    }
+
+                </div>
+            </div>
+            <br />
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-7">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Pojedinačni unos
+                    </p>
+                    <p style="font-size: 0.95rem;font-weight: 200;">Pojedinačnim unosom omogućeno je dodavanje prirodnog kretanja stanovništva po JLS </p>
+                    <a class="btn btn-outline-secondary btn-sm btn-block" asp-controller="NaturalChangePopulation" asp-action="Create"><i class="fas fa-user-plus"></i> Prirodni prirast po JLS</a>
+                </div>
+            </div>
+        </div>
+        <br />
+    }
+    else
+    {
+        <br />
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item active" aria-current="page">Stanovništvo</li>
+                <li class="breadcrumb-item active" aria-current="page">Prirodna promjena</li>
+            </ol>
+        </nav>
+    }
+
+    @if (!isSigned)
+    {
+        <span class="float-right"><small>Zadnje ažuriranje: @lastAddedDateValue</small></span>
+    }
+    <br />
+    <br />
+    <div class="row">
+        <div class="col-8">
+            <p class="lead">
+                Prikaz prirodnog kretanja kroz godine i po JLS
+            </p>
+            <hr />
+            <div class="edit-administration-form">
+                <div class="accordion" id="accordionExample">
+                    <div class="card">
+                        <div class="card-header" id="headingOne">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#naturalChangeTable" aria-expanded="true" aria-controls="naturalChangeTable">
+                                    Prirodno kretanje @string.Format("stanovništva od {0}. do {1}.", firstYear, lastYear)
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="naturalChangeTable" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                            <div class="card-body">
+                                @await Html.PartialAsync("_NaturalChangePopulationTable", model: Model.NaturalChangeByYear)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingThree">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#settlementsTable" aria-expanded="false" aria-controls="settlementsTable">
+                                    Grafički prikaz prirodnog kretanje @string.Format("stanovništva od {0}. do {1}.", firstYear, lastYear)
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="settlementsTable" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                            <div class="card-body">
+                                @await Html.PartialAsync("_NaturalChangePopulationGraph")
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header" id="headingTwo">
+                            <h2 class="mb-0">
+                                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#populationTable" aria-expanded="false" aria-controls="populationTable">
+                                    @string.Format("Prirodno kretanje stanovništva po JLS za {0}. god. ", lastYear)
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="populationTable" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                            <div class="card-body">
+                                @await Html.PartialAsync("_NaturalChangePopulationTableLocalGovernment", model: Model.NaturalChangePopulationByLocalAdministration)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-4">
+            <p class="lead" style="font-size: 1.15em;">
+                Prirodno kretanje po JLS
+            </p>
+            <hr />
+            <div class="edit-administration-form">
+                @await Html.PartialAsync("_NaturalChangePopulationByLocalAdministration", model: Model.LocalGovernmentAdministrations)
+            </div>
+            <br />
+        </div>
+    </div>
+</div>
+<br />
+<br />
+<style>
+    .custom-file-label::after {
+        content: "Pretraži" !important;
+    }
+</style>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+        let graphArrayDataLabels = @Html.Raw(Json.Serialize(labelData));
+        let graphArrayDataValues = @Html.Raw(Json.Serialize(chartData));
+
+
+        $('#naturalChangePopulationTable, #naturalChangePopulationTableLocalGovernment').DataTable({
+            dom: 'Bfrtip',
+            scrollX: true,
+            language: {
+                url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+            },
+            buttons: [{
+                text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                className: 'btn btn-outline-success',
+                extend: 'excelHtml5',
+                autoFilter: true,
+                sheetName: 'Exported data',
+                title: 'Tablica_' + dateToday
+            }],
+            bLengthChange: false,
+        });
+
+
+
+        var ctx = document.getElementById('naturalChangeGraph').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: graphArrayDataLabels,
+                datasets: graphArrayDataValues
+            },
+            options: {
+                legend: {
+                    fillStyle: 'none',
+                    onHover: function (event, legendItem) {
+                        document.getElementById("naturalChangeGraph").style.cursor = 'pointer';
+                    }
+                },
+                tooltips: {
+                    mode: 'label',
+                },
+                hover: {
+                    onHover: function (e, el) {
+                        $("#naturalChangeGraph").css("cursor", el[0] ? "pointer" : "default");
+                    }
+                },
+                plugins: {
+                    datalabels: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        },
+                        gridLines: {
+                            display: false
+                        }  
+                    }],
+                    xAxes: [{
+                        gridLines: {
+                            display: false
+                        }
+                    }],
+                }
+            }
+        });
+
+
+        $("#selectLocalAdministration").on("keyup", function () {
+            let value = $(this).val().toLowerCase();
+            $("#listKZZ a").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        let deleteDocumentsButton = $('#removeDocument')[0];
+        let submitButton = $('#savingDocument')[0];
+
+        $('.custom-file-input').on("change", function () {
+            let fileLabel = $(this).next('.custom-file-label');
+            let file = $(this)[0].files[0];
+            let isOnlyExcelFormat = checkIfNonExcelExists(file, $(this)[0]);
+
+
+            if (isOnlyExcelFormat) {
+                deleteDocumentsButton.disabled = false;
+                submitButton.disabled = false;
+
+                fileLabel.html(file.name);
+            } else {
+                bootbox.alert({
+                    centerVertical: true,
+                    message: "<div class='alert alert-danger' role='alert'>Moguće je dodati dokument samo u .xlsx .xls i .csv formatu!</div>",
+                    buttons: {
+                        ok: {
+                            label: '<i class="fa fa-check"></i> Prihvati',
+                            className: 'btn-success'
+                        }
+                    },
+                });
+            }
+        });
+
+        $('#removeDocument').on("click", function () {
+            let graphicDocument = document.getElementById('graphicDocument');
+            let graphicDocumentText = document.getElementById('graphicDocText');
+            graphicDocumentText.innerHTML = 'Odaberite dokument';
+            graphicDocument.value = '';
+            $(this)[0].disabled = true;
+            submitButton.disabled = true;
+        });
+
+
+        $("#savingDocument").click(function () {  // your submit button id
+
+            bootbox.dialog({
+                centerVertical: true,
+                message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Molimo pričekajte, podaci se obrađuju...</p>',
+                closeButton: false
+            });
+
+        });
+    });
+
+    function checkIfNonExcelExists(file, htmlElement) {
+        let extensions = ["xlsx", "xls", "csv"];
+        let fileExtension = file.name.split('.').pop().toLowerCase();
+
+        let isExcelType = extensions.includes(fileExtension);
+
+
+        return isExcelType;
+    }
+    </script>
+}
+

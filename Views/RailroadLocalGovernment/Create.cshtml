@@ -1,0 +1,147 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RailroadLocalGovernmentVM
+
+@{
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var railroads = Model.Railroads;
+
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+            <li class="breadcrumb-item"><a asp-controller="Railroads" asp-action="Index">Željeznička infrastruktura</a>
+            <li class="breadcrumb-item active" aria-current="page">Dodaj željeznicu</li>
+        </ol>
+    </nav>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Create" id="railoRoadsLocalGovernmentForm">
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Osnovni podaci o željeznici
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Jedinica lokalne samouprave </label>
+                                <select class="form-control" asp-for="RailroadLocalGovernment.LocalGovernmentAdministrationID" asp-items="@(new SelectList(Model.LocalGovernmentAdministrations, nameof(LocalGovernmentAdministration.Id), nameof(LocalGovernmentAdministration.Name)))">
+                                    <option value="" selected="">Odaberite JLS</option>
+                                </select>
+                                <span asp-validation-for="RailroadLocalGovernment.LocalGovernmentAdministrationID" class="text-danger"></span>
+                            </div>
+                            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Odaberite željeznicu </label>
+                                <select class="form-control" asp-for="RailroadLocalGovernment.RailroadID" id="railroadList" asp-items="@(new SelectList(Model.Railroads, nameof(Railroad.Id), nameof(Railroad.Code)))">
+                                    <option value="" selected="">Odaberite željeznicu</option>
+                                </select>
+                                <span asp-validation-for="RailroadLocalGovernment.RailroadID" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Opis odabrane željeznice </label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input disabled style="color: gray;" id="railroadDescription" class="form-control" />
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <p class="lead">
+                        Duljina željeznice u jedinici lokalne samouprave
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label asp-for="RailroadLocalGovernment.RailroadLength" class="control-label">Duljina (NN) *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input autocomplete="off" asp-for="RailroadLocalGovernment.RailroadLength" class="form-control" />
+                                </div>
+                                <span asp-validation-for="RailroadLocalGovernment.RailroadLength" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Railroads"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                    <a class="btn btn-outline-success" href="#" role="button" id="savingRailroadsLocalGovernment"><i class="fa fa-check"></i> Pohrani </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+
+    <script>
+    let railroads = @Html.Raw(Json.Serialize(railroads));
+        $('#railroadList').on('change', function () {
+        if (this.value != "") {
+            let railroad = railroads.find(r => { return r.id == this.value });
+            $("#railroadDescription").val(`${railroad.fullName} - ${railroad.lenght}km` );
+        } else {
+            $("#railroadDescription").val("");
+        }
+    });
+
+        $("#savingRailroadsLocalGovernment").click(function () {  // your submit button id
+
+            let isValid = $("#railoRoadsLocalGovernmentForm").valid();
+
+            if (isValid) {
+
+                let roilRoadsFormData = $("#railoRoadsLocalGovernmentForm").serialize();
+                let url = "/RailroadLocalGovernment/Create";
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: roilRoadsFormData,
+                    success: function () {
+                        bootbox.alert({
+                            centerVertical: true,
+                            message: "<div class='alert alert-success text-center' role='alert'>Željeznica uspješno dodana</div>",
+                            size: 'small',
+                            closeButton: false
+                        });
+                        setTimeout(() => {
+                        location.reload();
+                        }, 1000)
+                    }
+                })
+
+
+            } else {
+                bootbox.alert({
+                    centerVertical: true,
+                    message: "<div class='alert alert-danger text-center' role='alert'>Popunite obavezna polja!</div>",
+                    className: 'shake animated',
+                    buttons: {
+                        ok: {
+                            label: '<i class="fa fa-check"></i> Ispravi',
+                            className: 'btn-danger'
+                        }
+                    },
+                });
+            }
+        });
+    </script>
+
+}

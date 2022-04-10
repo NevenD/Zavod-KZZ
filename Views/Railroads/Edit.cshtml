@@ -1,0 +1,204 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RailroadsVM
+
+@{
+    var isSigned = SignInManager.IsSignedIn(User);
+
+    ViewData["Title"] = "Create";
+    if (isSigned)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<div class="container">
+    @if (isSigned)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                <li class="breadcrumb-item"><a asp-controller="Railroads" asp-action="Index">Željeznička infrastruktura</a>
+                <li class="breadcrumb-item active" aria-current="page">Željeznica @Model.Railroad.Code</li>
+            </ol>
+        </nav>
+    }
+    else
+    {
+        <br />
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item"><a asp-controller="Railroads" asp-action="Index">Željeznička infrastruktura</a>
+                <li class="breadcrumb-item active" aria-current="page">Željeznica @Model.Railroad.Code</li>
+            </ol>
+        </nav>
+    }
+
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Railroad.Id" />
+                <input type="hidden" asp-for="Railroad.DateAdded" />
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Osnovni podaci o željeznice
+                    </p>
+                    <hr />
+                    <div class="form-row">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Railroad.Code" class="control-label">Oznaka *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input asp-for="Railroad.Code" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label class="control-label">Kategorija željeznice </label>
+                            <select class="form-control" asp-for="Railroad.RailroadCategoryID" asp-items="@(new SelectList(Model.RailroadCategories, nameof(RailroadCategory.Id), nameof(RailroadCategory.Name)))">
+                                <option value="" selected="">Odaberite kategoriju</option>
+                            </select>
+                            <span asp-validation-for="Railroad.RailroadCategoryID" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <label asp-for="Railroad.FullName" class="control-label">Puni naziv *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input asp-for="Railroad.FullName" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.FullName" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Railroad.ShortName" class="control-label">Skraćeni naziv *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.ShortName" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.ShortName" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <br />
+                    <p class="lead">
+                        Duljina željeznice i popratna infrastruktura
+                    </p>
+                    <hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-3">
+                            <label asp-for="Railroad.ConstructionLength" class="control-label">Građevinska duljina *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.ConstructionLength" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.ConstructionLength" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label asp-for="Railroad.Lenght" class="control-label">Duljina u KZŽ *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.Lenght" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.Lenght" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label asp-for="Railroad.TrainStationNumber" class="control-label">Broj kolodvora *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.TrainStationNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.TrainStationNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label asp-for="Railroad.TrainPositionNumber" class="control-label">Broj stajališta *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.TrainPositionNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.TrainPositionNumber" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <p class="lead">
+                        Rekonstrukcija željeznice (ako postoji)
+                    </p>
+                    <hr />
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label style="font-size: smaller;" class="control-label">Datum početka rekonstrukcije</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                </div>
+                                <input type="text" autocomplete="off" asp-for="Railroad.ReconstructionDateStart" class="form-control datepicker" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label style="font-size: smaller;" class="control-label">Datum završetka rekonstrukcije</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                </div>
+                                <input type="text" autocomplete="off" asp-for="Railroad.ReconstructionDateEnd" class="form-control datepicker" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="Railroad.ReconstructionLenght" class="control-label">Duljina rekonstrukcije</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input autocomplete="off" asp-for="Railroad.ReconstructionLenght" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Railroad.ReconstructionLenght" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Dodatni komentari</label>
+                            <textarea placeholder="Npr. Planirani završetak željeznice i sl." style="max-height:130px; min-height:39px;" asp-for="Railroad.Remark" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <button type="submit" class="btn btn-outline-success"><i class="fa fa-check"></i> Pohrani </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_DatePickerPartial");}
+
+
+    <script>
+        $(document).ready(function () {
+            $(".datepicker").datepicker({
+                dateFormat: "dd.mm.yy.",
+                dayNamesMin: ["Ne", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
+                monthNames: ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"]
+            });
+        });
+    </script>
+}

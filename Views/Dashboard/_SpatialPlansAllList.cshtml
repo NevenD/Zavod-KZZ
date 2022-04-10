@@ -1,0 +1,155 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.SpatialPlanDocument>
+
+<table class="table small" id="spatialPlansAllList" style="width:100%">
+    <thead>
+        <tr>
+            <th align="center">Općina/Grad</th>
+            <th align="center">Vrsta plana</th>
+            <th align="center">Naziv plana</th>
+            <th align="center">Puni naziv plana</th>
+            <th align="center">Naziv revizije Plana</th>
+            <th align="center">ISPU</th>
+            <th align="center">Status plana</th>
+            <th align="center">Mjerilo plana</th>
+            <th align="center">Datum donošenja plana</th>
+            <th align="center">Glasnik</th>
+            <th align="center">Broj glasnika</th>
+            <th align="center">Veza na glasnik</th>
+            <th align="center">Odluka na snazi</th>
+            <th align="center">Objava glasnika</th>
+            <th align="center">Napomena na glasnik</th>
+            <th align="center">Odluka o izradi</th>
+            <th align="center">Suglasnost</th>
+            <th align="center">Izrađivač plana</th>
+            <th align="center">Projekcija plana</th>
+            <th align="center">Stanje dokumenta</th>
+            <th align="center">Konzervatorska studija</th>
+            <th align="center">SPUO/PUO</th>
+            <th align="center">Napomena na plan</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            var className = GetPlanStatusClassStyle(item.SpatialPlanStatus.Name);
+        <tr>
+            <td class="@className">
+                @Html.DisplayFor(modelItem => item.LocalGovernmentAdministration.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanLevel.ShortName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RevisionName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IspuName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanStatus.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialMeasure.Name)
+            </td>
+            @if (item.SpatialPlanEnactmentDate.HasValue)
+            {
+                <td>
+                    @item.SpatialPlanEnactmentDate.Value.ToShortDateString()
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    -
+                </td>
+
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficalSpatialNews.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficialSpatialNewsNumber)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficialSpatialNewsNumberUrl)
+            </td>
+
+            @if (item.SpatialPlanPublicationDate.HasValue)
+            {
+                <td>
+                    @item.SpatialPlanPublicationDate.Value.ToShortDateString()
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    -
+                </td>
+
+            }
+            @if (item.SpatialPlanEffectiveDate.HasValue)
+            {
+                <td>
+                    @item.SpatialPlanEffectiveDate.Value.ToShortDateString()
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    -
+                </td>
+
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.OfficialSpatialNewsRemark)
+            </td>
+            @if (item.SpatialPlanAnnouncementDevelopDate.HasValue)
+            {
+                <td>
+                    @item.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString()
+                </td>
+
+            }
+            else
+            {
+                <td>
+                    -
+                </td>
+
+            }
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanDocumentationRemark)
+            </td>
+
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanner.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialProjection.ShortName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanDelivery.DeliveryStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ConservationDocument.ValidationStatus)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpuoPuoDocument.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SpatialPlanApprovalRemark)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

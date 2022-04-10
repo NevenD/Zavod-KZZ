@@ -1,0 +1,271 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RoadsVM
+@{
+
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var roadGeometries = Model.RoadGeometries;
+    var editedGeometry = Model.Road.Geometries?.FirstOrDefault();
+}
+<partial name="_SettingsModal" />
+<div class="container-fluid">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+            <li class="breadcrumb-item" aria-current="page">Infrastruktura</li>
+            <li class="breadcrumb-item" aria-current="page">Cestovna infrastruktura</li>
+            <li class="breadcrumb-item active" aria-current="page">Cesta @Model.Road.Code</li>
+        </ol>
+    </nav>
+    <div class="row">
+        <div class="col-md-4">
+            <form asp-action="Edit" id="formEditRoad">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Road.Id" />
+                <input type="hidden" asp-for="Road.DateAdded" />
+                <div class="edit-administration-form">
+                    <p class="lead">
+                        Osnovni podaci o cesti
+                    </p>
+                    <hr />
+                    <div class="form-row">
+                        <input type="hidden" name="GeojsonFormat" id="geojson" value="@editedGeometry?.GeoJSON" />
+                        <input type="hidden" name="WKTFormat" id="wkt"   value="@editedGeometry?.WKT" />
+                        <input type="hidden" name="CoordinatesUnprojected" id="coordinatesUnprojected"  value="@editedGeometry?.CoordinatesUnprojected"/>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group col-md-12">
+                            <label asp-for="Road.Code" class="control-label">Oznaka *</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input asp-for="Road.Code" class="form-control" />
+                            </div>
+                            <span asp-validation-for="Road.Code" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-12">
+                            <label class="control-label">Jedinica lokalne samouprave </label>
+                            <select class="form-control" asp-for="Road.RoadCategoryID" asp-items="@(new SelectList(Model.RoadCategories, nameof(RoadCategory.Id), nameof(RoadCategory.Name)))">
+                                <option value="" selected="">Odaberite kategoriju</option>
+                            </select>
+                            <span asp-validation-for="Road.RoadCategoryID" class="text-danger"></span>
+                        </div>
+                    </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label asp-for="Road.Description" class="control-label">Opis *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input asp-for="Road.Description" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Road.Description" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="Road.SpatialNewslength" class="control-label">Duljina (NN) *</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input autocomplete="off" asp-for="Road.SpatialNewslength"  class="form-control" />
+                                </div>
+                                <span asp-validation-for="Road.SpatialNewslength" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label asp-for="Road.DigitalOrthophotoLength" class="control-label">Duljina (DOF)</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                    </div>
+                                    <input autocomplete="off" asp-for="Road.DigitalOrthophotoLength" id="ortoLengthEdit" class="form-control" />
+                                </div>
+                                <span asp-validation-for="Road.DigitalOrthophotoLength" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label asp-for="Road.ReconstructionDate" style="font-size: smaller;" class="control-label">Datum rekonstrukcije</label>
+                                <div class="input-group mb-3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                    </div>
+                                    <input type="text" autocomplete="off" asp-for="Road.ReconstructionDate" class="form-control datepicker" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-12">
+                                <label class="control-label">Opis rekonstrukcije</label>
+                                <textarea placeholder="Npr. micanje trupa ceste" style="max-height:130px; min-height:39px;" asp-for="Road.ReconstructionDescription" class="form-control"></textarea>
+                            </div>
+                        </div>
+                </div>
+                <br />
+                <div class="form-group">
+                    <a class="btn btn-outline-secondary" asp-action="Index"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                    <button type="button" class="btn btn-outline-success" id="editRoad"><i class="fa fa-check"></i> Pohrani </button>
+
+                </div>
+            </form>
+        </div>
+        <div class="col-md-8">
+            <div class="edit-administration-form">
+                <div id="map" class="map map-admin"></div>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_DatePickerPartial");}
+    @{await Html.RenderPartialAsync("_LayerSettingsScripts");}
+    @{await Html.RenderPartialAsync("_MapScriptsPartial");}
+    @{await Html.RenderPartialAsync("_MapCustomButtonScripts");}
+    <script src="~/js/sortedRoad/roadEdit.js"></script>
+    <script>
+        let roadGeometries = @Html.Raw(Json.Serialize(roadGeometries));
+        let editedGeometry = @Html.Raw(Json.Serialize(editedGeometry));
+
+        $(document).ready(function () {
+            $(".datepicker").datepicker({
+                dateFormat: "dd.mm.yy.",
+                dayNamesMin: ["Ne", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
+                monthNames: ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"]
+            });
+
+     
+            generateExistingRoadGeometries(roadGeometries);
+            if (editedGeometry != null) {
+                let generatedEditFeature = createLineStringFeature(editedGeometry.coordinatesUnprojected);
+                generatedEditFeature.setProperties({
+                    OZNAKA: editedGeometry.road.code,
+                    OPIS: editedGeometry.road.description,
+                    KATEGORIJA: editedGeometry.road.roadCategory.name
+                });
+
+                roadEditVector.getSource().addFeature(generatedEditFeature);
+            }
+
+
+            let extentFetchedVectors = fetchedVectors.getSource().getExtent();
+            let extentEditedVectors = roadEditVector.getSource().getExtent();
+
+            if (extentEditedVectors != null) {
+                if (extentEditedVectors[0] != Infinity) {
+                    map.getView().fit(extentEditedVectors, { duration: 1500 });
+                } else {
+                    if (extentFetchedVectors[0] != Infinity) {
+                        map.getView().fit(extentFetchedVectors, { duration: 1500 });
+                    }
+                }
+            }
+            $('[data-toggle="tooltip"]').tooltip();
+
+            $("#editRoad").click(function () {
+                let formHtml = $('#formEditRoad');
+                let isValid = $(formHtml).valid();
+                if (isValid) {
+                    let url = formHtml.attr('action');
+
+                    let roadFeatures = roadEditVector.getSource().getFeatures();
+
+                    if (roadFeatures.length > 0) {
+
+                        let wktWriter = new ol.format.WKT();
+                        let geojsonWriter = new ol.format.GeoJSON();
+                        let roadPostData = new ol.source.Vector();
+                        let stringCoordinates = [];
+                        for (let feature of roadFeatures) {
+
+                            let geom = feature.getGeometry();
+                            let coords = geom.getCoordinates();
+                            let coordsArray = coords.join(';');
+                            stringCoordinates.push(coordsArray);
+
+
+                            feature.setProperties({
+                                roadCode: roadCode.value,
+                                roadCategory: roadCategory.selectedOptions[0].text,
+                                roadDescription: roadDescription.value,
+                                roadOfficialLength: roadOfficialLength.value,
+                                roadDOFLength: calculateLengthForFeature(feature),
+                                reconstructionDate: roadReconstructionDate.value,
+                                reconstructionDecription: roadReconstructionDescription.value,
+                            });
+
+                            roadPostData.addFeature(feature);
+                        }
+
+                        let wktFormat = wktWriter.writeFeatures(roadFeatures);
+                        let geojson = geojsonWriter.writeFeatures(roadPostData.getFeatures());
+                        let coordinatesUnprojected = stringCoordinates.join(';');
+
+                        elementWKT.value = wktFormat;
+                        elementGeoJSON.value = geojson;
+                        elementCoorsUnprojected.value = coordinatesUnprojected;
+                    }
+
+                    let formData = formHtml.serialize();
+
+                    $.ajax({
+                        type: "POST",
+                        url: url,
+                        data: formData,
+                        success: function (data) {
+                            bootbox.confirm({
+                                onEscape: false,
+                                centerVertical: true,
+                                message: `<div class='alert alert-succes text-center' style='color:#33383a;' role='alert'> Uspješno editirani podaci za <b>${data.roadCode}</b> cestu </div>`,
+                                buttons: {
+                                    confirm: {
+                                        label: '<i class="fa fa-check"></i> Prihvati',
+                                        className: "btn-success"
+                                    },
+                                    cancel: {
+                                        label: '<i class="fas fa-redo-alt"></i> Ponovi',
+                                        className: "btn-outline-secondary"
+                                    }
+                                },
+                                callback: function (result) {
+                                    if (result) {
+                                        window.location.href = "/Roads";
+                                    }
+                                }
+                            })
+                        }
+                    });
+                } else {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger text-center' role='alert'>Popunite obavezna polja!</div>",
+                        className: 'shake animated',
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Zatvori',
+                                className: 'btn-danger'
+                            }
+                        },
+                    });
+                }
+            });
+
+            function generateExistingRoadGeometries(data) {
+                for (let vector of data) {
+                    let generatedFeature = createLineStringFeature(vector.coordinatesUnprojected);
+                    generatedFeature.setProperties({
+                        OZNAKA: vector.road.code,
+                        OPIS: vector.road.description,
+                        KATEGORIJA: vector.road.roadCategory.name
+                    });
+
+                    fetchedVectors.getSource().addFeature(generatedFeature);
+                }
+            }
+        });
+    </script>
+
+}

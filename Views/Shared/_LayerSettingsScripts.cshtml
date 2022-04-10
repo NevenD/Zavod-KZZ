@@ -1,0 +1,215 @@
+﻿<environment include="Development">
+    <script  asp-append-version="true">
+
+        let dofSlider = $("#dofSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguDof.setOpacity(e.value / 100);
+            },
+            disabled: false
+        });
+        let tkSlider = $("#tkSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguTk.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+        let hokSlider = $("#hokSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguHok.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+        let cadastreSlider = $("#cadastreSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguCadastral.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+
+        let dmrSlider = $("#dmrSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguRelief.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+
+        $('#dofswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguDof);
+                dguDof.setOpacity(1);
+                dofSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguDof);
+                dofSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#tkswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguTk);
+                dguTk.setOpacity(1);
+                tkSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguTk);
+                tkSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#hokswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguHok);
+                dguHok.setOpacity(1);
+                hokSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguHok);
+                hokSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#cadastreswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguCadastral);
+                dguCadastral.setOpacity(1);
+                cadastreSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguCadastral);
+                cadastreSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#dmrSwitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguRelief);
+                dguRelief.setOpacity(1);
+                dmrSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguRelief);
+                dmrSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+
+    </script>
+</environment>
+<environment exclude="Development">
+    <script asp-append-version="true" >
+        let dofSlider = $("#dofSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguDof.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+        let tkSlider = $("#tkSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguTk.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+        let hokSlider = $("#hokSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguHok.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+        let cadastreSlider = $("#cadastreSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguCadastral.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+
+        let dmrSlider = $("#dmrSlider").slider({
+            min: 0,
+            max: 100,
+            value: 100,
+            slide: function (event, e) {
+                dguRelief.setOpacity(e.value / 100);
+            },
+            disabled: true
+        });
+
+        $('#dofswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguDof);
+                dguDof.setOpacity(1);
+                dofSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguDof);
+                dofSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#tkswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguTk);
+                dguTk.setOpacity(1);
+                tkSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguTk);
+                tkSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#hokswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguHok);
+                dguHok.setOpacity(1);
+                hokSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguHok);
+                hokSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#cadastreswitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguCadastral);
+                dguCadastral.setOpacity(1);
+                cadastreSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguCadastral);
+                cadastreSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+        $('#dmrSwitch').on('change', function () {
+            let isChecked = $(this).is(':checked');
+            if (isChecked) {
+                map.addLayer(dguRelief);
+                dguRelief.setOpacity(1);
+                dmrSlider.slider({ value: 100, disabled: false, animate: true });
+            } else {
+                map.removeLayer(dguRelief);
+                dmrSlider.slider({ value: 100, disabled: true, animate: true });
+            }
+        });
+
+    </script>
+</environment>

@@ -1,0 +1,416 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.DashboardSpatialPlansTableVM
+@{
+    ViewData["Title"] = "SpatialDocument";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var dateToday = DateTime.Now.ToShortDateString();
+    var thisYear = DateTime.Now.Year.ToString();
+    var thisYearDevelopmentPlans = Model.SpatialPlanDocuments.Where(x => x.SpatialPlanAnnouncementDevelopDate != null && (x.SpatialPlanAnnouncementDevelopDate.Value.Year == DateTime.Now.Year)).OrderByDescending(x => x.SpatialPlanAnnouncementDevelopDate.Value);
+    var unknownStatus = Model.SpatialPlanDocuments.Where(x => x.SpatialPlanDelivery.Id == (int)Enums.SpatialPlanDelivery.UNKNOWN).ToList();
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Prostorni planovi</li>
+        <li class="breadcrumb-item active" aria-current="page">Tablični prikaz</li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-muted"><i class="fas fa-database fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Ukupno planova: <b>@Model.TotalPlans</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-success"><i class="far fa-folder-open fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Planovi na snazi: <b>@Model.ValidPlans</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-info"><i class="far fa-edit fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Planovi u izradi: <b>@Model.InProgressPlans</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-muted"><i class="fas fa-pencil-alt fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Izmjena i dopuna:<b>@Model.PlansChanged</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-muted"><i class="far fa-calendar-alt fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Planovi od 2014.:<b>@Model.PlansAfter2014</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-2 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-danger"><i class="fas fa-lock fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2" style="font-size:1.20rem;">Planovi van snage: <b>@Model.PlansInvalid</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div style="display: flex;align-items: center;">
+    <p class="spatial-status-valid">
+        <span style="margin-left: 7px;">Na snazi</span>
+    </p>
+    <p class=" spatial-status-inprogress" style="margin-left: 20px;">
+        <span style="margin-left: 7px;">U izradi</span>
+    </p>
+    <p class="spatial-status-invalid" style="margin-left: 20px;">
+        <span style="margin-left: 7px;">Van snage</span>
+    </p>
+</div>
+<br />
+<div class="row">
+    <div class="col-xl-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="allPlans">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#allPlansList" aria-expanded="true" aria-controls="allPlansList">
+                                <i class="fa fa-table" aria-hidden="true"></i> Prikaz svih planova
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="allPlansList" class="collapse show" aria-labelledby="headingOne" data-parent="#allPlans">
+                        <div class="card-body">
+                            @await Html.PartialAsync("_SpatialPlansAllList", model: Model.SpatialPlanDocuments)
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xl-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="accordionExample1">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne1" aria-expanded="true" aria-controls="collapseOne">
+                                <i class="fas fa-info"></i> Detalji o planovima i dokumentaciji
+                            </button>
+                        </h2>
+                    </div>
+
+                    <div id="collapseOne1" class="collapse " aria-labelledby="headingOne" data-parent="#accordionExample1">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-3">
+                                    <p class="lead">
+                                        Nepotpuni planovi<span class="float-right badge badge-success">@Model.IncompletePlans.Count()</span>
+                                    </p>
+                                    <hr />
+                                        <div class="card-height-dashboard">
+
+                                            @foreach (var plan in Model.IncompletePlans)
+                                            {
+                                                var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+                                                var dateDifference = DateTime.Now.Subtract(plan.DateAdded.Value).Days;
+
+                                                var styleName = string.Format("lead mb-1 {0}", className);
+                                                <div class="list-group">
+                                                    <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                            <small>@string.Format("Dodano prije {0} dana", dateDifference)</small>
+                                                        </div>
+                                                        <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                        <small>@plan.IspuName</small>
+                                                    </a>
+                                                </div>
+                                            }
+                                        </div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <p class="lead">
+                                        Nedostavljeni planovi<span class="float-right badge badge-success">@Model.SpatialPlansUndelivered.Count()</span>
+                                    </p>
+                                    <hr />
+                                        <div class="card-height-dashboard">
+                                            @foreach (var plan in Model.SpatialPlansUndelivered)
+                                            {
+                                                var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+                                                var dateDifference = DateTime.Now.Subtract(plan.DateAdded.Value).Days;
+
+                                                var styleName = string.Format("lead mb-1 {0}", className);
+                                                <div class="list-group">
+                                                    <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                            <small>@string.Format("Dodano prije {0} dana", dateDifference)</small>
+                                                        </div>
+                                                        <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                        <small>@plan.IspuName</small>
+                                                    </a>
+                                                </div>
+                                            }
+                                        </div>
+                                </div>
+                                <div class="col-xl-3">
+                                    <p class="lead">
+                                        Nepoznati status<span class="float-right badge badge-success">@unknownStatus.Count()</span>
+                                    </p>
+                                    <hr />
+                                        <div class="card-height-dashboard">
+                                            @foreach (var plan in unknownStatus)
+                                            {
+                                                var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+                                                string dateDifference = string.Empty;
+
+                                                if (plan.DateAdded.HasValue)
+                                                {
+                                                    dateDifference = DateTime.Now.Subtract(plan.DateAdded.Value).Days.ToString();
+                                                }
+
+                                                var styleName = string.Format("lead mb-1 {0}", className);
+                                                <div class="list-group">
+                                                    <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                            <small>@string.Format("Dodano prije {0} dana", dateDifference)</small>
+                                                        </div>
+                                                        <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                        <small>@plan.IspuName</small>
+                                                    </a>
+                                                </div>
+                                            }
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xl-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="accordionExample2">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne2" aria-expanded="true" aria-controls="collapseOne2">
+                                <i class="fas fa-archive"></i> Arhivirani planovi i ostala dodatna dokumentacija
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseOne2" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample2">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-6">
+                                    <p class="lead">
+                                        Planovi bez dodatne dokumentacije<span class="float-right badge badge-success">@Model.PlansWithoutDocuments.Count()</span>
+                                    </p>
+                                    <hr />
+                                    <div class=" card-height-dashboard">
+                                        @foreach (var plan in Model.PlansWithoutDocuments)
+                                        {
+                                            var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+
+                                            string dateDifference = string.Empty;
+
+                                            if (plan.DateAdded.HasValue)
+                                            {
+                                                dateDifference = DateTime.Now.Subtract(plan.DateAdded.Value).Days.ToString();
+                                            }
+
+                                            var styleName = string.Format("lead mb-1 {0}", className);
+                                            <div class="list-group">
+                                                <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action">
+                                                    <div class="d-flex w-100 justify-content-between">
+                                                        <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                        <small>@string.Format("Dodano prije {0} dana", dateDifference)</small>
+                                                    </div>
+                                                    <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                    <small>@plan.IspuName</small>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                                <div class="col-xl-6">
+                                    <p class="lead">
+                                        Arhivirani planovi<span class="float-right badge badge-success">@Model.Archived.Count()</span>
+                                    </p>
+                                    <hr />
+                                        <div class="card-height-dashboard">
+                                            @foreach (var plan in Model.Archived)
+                                            {
+                                                var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+                                                string dateDifference = string.Empty;
+
+                                                if (plan.DateAdded.HasValue)
+                                                {
+                                                    dateDifference = DateTime.Now.Subtract(plan.DateAdded.Value).Days.ToString();
+                                                }
+
+                                                var styleName = string.Format("lead mb-1 {0}", className);
+                                                <div class="list-group">
+                                                    <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action bg-warning">
+                                                        <div class="d-flex w-100 justify-content-between">
+                                                            <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                            <small>@string.Format("Dodano prije {0} dana", dateDifference)</small>
+                                                        </div>
+                                                        <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                        <small>@plan.IspuName</small>
+                                                    </a>
+                                                </div>
+                                            }
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-xl-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="accordionExample3">
+                <div class="card">
+                    <div class="card-header" id="headingOne">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne3" aria-expanded="true" aria-controls="collapseOne3">
+                                <i class="fas fa-table"></i> Prostorno planska dokumentacija za aktualnu  @string.Format("{0}. godinu",thisYear)
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="collapseOne3" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample3">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-xl-8">
+                                    @await Html.PartialAsync("_SpatialPlansActualTableView", model: Model.PlansFromActualYear)
+                                </div>
+                                <div class="col-xl-4">
+                                    <p class="lead">
+                                        Planovi u razvoju za @string.Format("{0}. godinu", thisYear)
+                                    </p>
+                                    <hr />
+                                    <div class="card-body card-height-dashboard">
+                                        @foreach (var plan in thisYearDevelopmentPlans)
+                                        {
+                                            var className = GetPlanStatusClassStyle(plan.SpatialPlanStatus.Name);
+                                            var styleName = string.Format("lead mb-1 {0}", className);
+                                            <div class="list-group">
+                                                <a asp-action="Edit" asp-route-Id="@plan.Id" asp-controller="SpatialPlanDocuments" class="list-group-item list-group-item-action">
+                                                    <div class="d-flex w-100 justify-content-between">
+                                                        <p class="@styleName"><small style="margin-left:10px;">@plan.Name</small></p>
+                                                    </div>
+                                                    <p class="mb-1"><small>@string.Format("{0} Broj: {1}", plan.OfficalSpatialNews.Name, plan.OfficialSpatialNewsNumber) </small></p>
+                                                    <small>@string.Format("Objave Odluke o izradi: {0}", plan.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString())</small>
+                                                </a>
+                                            </div>
+                                        }
+                                    </div>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    th, td {
+        white-space: nowrap;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+<script>
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+
+
+            $('#spatialPlansAllList').removeAttr('width').DataTable({
+                dom: 'Bfrtip',
+                fixedHeader: true,
+                autoWidth: false,
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                buttons: [{
+                    text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                    className: 'btn btn-outline-success',
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data',
+                    title: 'Tablica_' + dateToday
+                }]
+            });
+
+            $('#spatialPlansActualPlans').DataTable({
+                dom: 'Bfrtip',
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                buttons: [{
+                    text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                    className: 'btn btn-outline-success',
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data',
+                    title: 'Tablica_'+dateToday
+                }]
+            });
+        });
+
+
+</script>
+
+}

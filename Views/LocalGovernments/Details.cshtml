@@ -1,0 +1,274 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.LocalGovernmentAdministrationVM
+@{
+    ViewData["Title"] = "Details";
+    var graphData = Model.PopulationGraphData.ToArray();
+
+    var administration = string.Empty;
+    if (Model.LocalGovernmentAdministration.IsAdministrativeCity == true)
+    {
+        administration = "Grada";
+    }
+    else
+    {
+        administration = "Općina";
+    }
+
+
+    var dateToday = DateTime.Now.ToShortDateString();
+    var isSigned = SignInManager.IsSignedIn(User);
+    if (isSigned)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+<style>
+    .accordion > .card > .card-header {
+        border-radius: 0;
+        margin-bottom: 0px !important;
+    }
+</style>
+<div class="container">
+    <br />
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+            <li class="breadcrumb-item"><a asp-controller="LocalGovernments" asp-action="Index">Prostorne jedinice (JLS)</a>
+            <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+        </ol>
+    </nav>
+    <p class="lead" style="font-size: 1.6em;">
+        @administration  @Model.LocalGovernmentAdministration.Name
+    </p>
+    <hr />
+    <div class="row ">
+        <div class="col-md-5">
+            <div class="edit-administration-form">
+                <div class="card">
+                    <h5 class="card-header">Detalji</h5>
+                    <div class="card-body">
+                        <div class="accordion" id="accordionExample">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData" aria-expanded="true" aria-controls="infoData">
+                                            Opći podaci
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="infoData" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush" style="font-size: 0.76rem;">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Matični broj
+                                                <span>@Model.LocalGovernmentAdministration.CodeNumber</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Tip zajednice
+                                                <span>@Model.LocalGovernmentAdministration.CommunityType.Name</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Površina
+                                                <span>@Model.LocalGovernmentAdministration.SurfaceArea km<sup>2</sup></span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                WEB
+                                                <span><a href="@Model.LocalGovernmentAdministration.WebSiteUrl ">@Model.LocalGovernmentAdministration.WebSiteUrl</a></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0" style="display:inline;">
+                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#settlements" aria-expanded="false" aria-controls="settlements">
+                                            Popis naselja
+                                        </button>
+                                    </h2>
+                                    <span class="badge badge-success badge-pill badge-item-settlement">@Model.Settlements.Count()</span>
+                                </div>
+                                <div id="settlements" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            @{int counter = 1; }
+                                            @foreach (var settlement in @Model.Settlements)
+                                            {
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    <span class="counter-item-settlement">@counter.</span><span>@settlement.Name</span>
+                                                    <small>MBR: @settlement.CodeNumber</small>
+                                                </li>
+                                                counter++;
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingTwo">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#population" aria-expanded="false" aria-controls="population">
+                                            Stanovništvo
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="population" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush" style="font-size: 0.76rem;">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Broj stanovnika 2001. godine
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.Population2001</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Broj stanovnika 2011. godine
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.Population2011</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Broj stanovnika 2021. godine
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.Population2021</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Gustoća stanovništva 2001.
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationDensity2001 (st./km<sup>2</sup>)</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Gustoća stanovništva 2011.
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationDensity2011 (st./km<sup>2</sup>)</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Gustoća stanovništva 2021.
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationDensity2021 (st./km<sup>2</sup>)</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Smanjenja broja stanovnika (2001. - 2011.)
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationDecrease2011 %</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Smanjenja broja stanovnika (2011. - 2021.)
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationDecrease2021 %</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Indeks promjene broja sta (2011. - 2001.)
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationIndexChange2011 </span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Indeks promjene broja sta (2021. - 2011.)
+                                                <span class="details-population">@Model.LocalGovernmentAdministration.PopulationIndexChange2021 </span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-7">
+            <div class="edit-administration-form">
+                <canvas id="myChart" style="width:100%; height:400px"></canvas>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div>
+        <a class="btn btn-outline-secondary" asp-controller="LocalGovernments" asp-action="Index" role="button"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+        @if (isSigned)
+        {
+            <a class="btn btn-outline-success" asp-action="Edit" role="button" asp-route-id="@Model.LocalGovernmentAdministration.Id"><i class="far fa-edit"></i> Uredi</a>
+        }
+        </div>
+</div>
+<style>
+    .counter-item-settlement {
+        font-size: small;
+        font-weight: 700;
+    }
+
+    .badge-item-settlement {
+        float: right;
+        margin-top: 15px;
+    }
+</style>
+
+@section Scripts{
+    <script>
+        let graphArrayData = @Html.Raw(Json.Serialize(graphData));
+
+       $(document).ready(function () {
+           let ctx = document.getElementById('myChart').getContext('2d');
+           const chart = new Chart(ctx, {
+               type: "horizontalBar",
+               data: {
+                  labels: ["Broj stanovništva"],
+                  datasets: [{
+                     label: "2001.",
+                     backgroundColor: "#ca0020",
+                     data: [graphArrayData[0]],
+                  },{
+                     label: "2011.",
+                     backgroundColor: "#0571b0",
+                     data: [graphArrayData[1]],
+                  },{
+                     label: "2021.",
+                     backgroundColor: "#4dac26",
+                     data: [graphArrayData[2]],
+                  }]
+               },
+               options: {
+                    responsive: true,
+                    legend: { position: 'top'},
+                    title: { display: true, text: 'Popis stanovništva za 2001., 2011., i 2021. godinu' },
+                            scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true
+                            }
+                        }]
+                        },
+                    legend: {
+                        onHover: function (e) {
+                             e.target.style.cursor = 'pointer';
+                          }
+                   },
+                         tooltips: {
+                        enabled: false
+                    },
+                    hover: {
+                        onHover: function(e) {
+                            let point = this.getElementAtEvent(e);
+                            if (point.length) e.target.style.cursor = 'pointer';
+                            else e.target.style.cursor = 'default';
+                        }
+                   },
+                   plugins: {
+                       datalabels: {
+                            color: '#fff',
+                            anchor: 'end',
+                            align: 'start',
+                            offset: -10,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            borderRadius: 25,
+                            backgroundColor: (con) => {
+                                return con.dataset.backgroundColor;
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: '11'
+                            }
+                       }
+                   }
+               },
+
+            });
+    });
+
+    </script>
+
+}
+

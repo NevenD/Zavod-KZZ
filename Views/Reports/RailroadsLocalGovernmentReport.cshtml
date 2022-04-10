@@ -1,0 +1,81 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Reports.RailroadsReportVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item" aria-current="page">Izrada izvješća</li>
+        <li class="breadcrumb-item active" aria-current="page">Željeznice po JLS</li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-md-4 offset-md-3">
+        <p class="lead">
+            Izrada izvješća po JLS
+        </p>
+        <hr />
+        <form asp-action="Create">
+            <div class="edit-administration-form">
+                <div class="form-row">
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="railroadList">Kategorija željeznica</label>
+                        <select class="form-control" id="railroadList" asp-items="@(new SelectList(Model.RailroadCategories, nameof(RailroadCategory.Id), nameof(RailroadCategory.Name)))">
+                            <option value="" selected="">Odaberite kategoriju</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="localGovernmentList">Jedinice lokalne samouprave</label>
+                        <select class="form-control" id="localGovernmentList" asp-items="@(new SelectList(Model.LocalGovernmentAdministrations, nameof(LocalGovernmentAdministration.Id), nameof(LocalGovernmentAdministration.Name)))">
+                            <option value="" selected="">Odaberite JLS</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-success" id="railroadLocalGovernmentReport"><i class="fa fa-check"></i> Izradi izvješće</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+
+    <script>
+
+        $(document).ready(function () {
+            $("#railroadLocalGovernmentReport").click(function (e) {
+                e.preventDefault();
+                let railroadCategoryId = $("#railroadList").val();
+                let localGovernmentId = $("#localGovernmentList").val();
+
+                let url = "/Reports/GetRailroadsByLocalGovernment/";
+
+                if (railroadCategoryId == "") {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger text-center' role='alert'>Odaberite kategoriju ceste</div>",
+                        className: 'shake animated',
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Ispravi',
+                                className: 'btn-danger'
+                            }
+                        },
+                    });
+                } else {
+                    window.location.href = `${url}?railroadCategoryId=${railroadCategoryId}&localGovernmentId=${localGovernmentId}`;
+                    //https://stackoverflow.com/questions/47134698/get-excel-file-xlsx-from-server-response-in-ajax
+                }
+
+            });
+        });
+    </script>
+
+}

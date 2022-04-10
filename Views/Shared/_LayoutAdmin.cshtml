@@ -1,0 +1,362 @@
+﻿<!doctype html>
+<html lang="hr">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="Neven Dimač ">
+    <title>KZŽ  - Upravljačka ploča</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon-zara.png">
+    <environment include="Development">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    </environment>
+    <environment exclude="Development">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    </environment>
+    <link rel="stylesheet" href="~/css/material.css" />
+    <link rel="stylesheet" href="~/lib/datatables/css/dataTables.bootstrap4.min.css" />
+    <link rel="stylesheet" href="~/lib/jqueryui/jquery-ui.min.css" />
+    <link rel="stylesheet" href="~/lib/Chart.js/Chart.css">
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/css/ol.css" type="text/css" />
+
+</head>
+<body class="sb-nav-fixed">
+    <nav class="sb-topnav navbar navbar-expand navbar-light bg-light">
+        <a class="navbar-brand" href="/Dashboard"><img src="~/images/test-lud.png" alt="Logo KZZ" width="50px;" height="40px;"></a><button class="btn btn-link btn-sm order-1 order-lg-0" id="sidebarToggle" href="#">
+            <i class="fas fa-bars"></i>
+        </button><!-- Navbar Search-->
+        <!-- Navbar-->
+        <div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="/"><i class="fas fa-home"></i> Prikaz javne aplikacije</a>
+                </li>
+                <li class="nav-item">
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="nav-link btn btn-link "><i class="fas fa-sign-out-alt"></i> Odjava</button>
+                    </form>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div id="layoutSidenav">
+        <div id="layoutSidenav_nav">
+            <nav class="sb-sidenav accordion sb-sidenav-light" id="sidenavAccordion">
+                <div class="sb-sidenav-menu">
+                    <div class="nav">
+                        <div class="sb-sidenav-menu-heading">Početna stranica  - v1.5</div>
+                        <a class="nav-link" href="/Dashboard">
+                            <div class="sb-nav-link-icon"><i style="color: green;" class="fa fa-home"></i></div>
+                            Početni pregled
+                        </a>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages"
+                           aria-expanded="false" aria-controls="collapsePages">
+                            <div class="sb-nav-link-icon"><i style="color: greenyellow;" class="far fa-map"></i></div>
+                            Registar planova
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#pagesCollapseAuth" aria-expanded="false"
+                                   aria-controls="pagesCollapseAuth">
+                                    Planovi
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="DashBoard" asp-action="SpatialPlansTableView"><i style="margin-right:5px; color: greenyellow;" class="fas fa-table"></i>Tablični pregled</a>
+                                        <a class="nav-link admin-nested-links" asp-controller="DashBoard" asp-action="SpatialPlansGraphView"><i style="margin-right:5px; color: greenyellow;" class="fas fa-chart-bar"></i>Pregled grafikona</a>
+                                        <a class="nav-link admin-nested-links" asp-controller="DashBoard" asp-action="AddingSpatialPlans"><i style="margin-right:5px; color: greenyellow;" class="far fa-edit"></i>Dodavanje i uređivanje</a>
+                                    </nav>
+                                </div>
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#pagesCollapseMakers" aria-expanded="false"
+                                   aria-controls="pagesCollapseMakers">
+                                    Izrađivači
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseMakers" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="SpatialPlanners" asp-action="Index"><i style="margin-right:5px; color: greenyellow;" class="far fa-edit"></i>Pregled i uređenje</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#documentsRepo"
+                           aria-expanded="false" aria-controls="documentsRepo">
+                            <div class="sb-nav-link-icon"><i style="color: darkgoldenrod;" class="far fa-file-pdf"></i></div>
+                            Registar dokumenata
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="documentsRepo" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#pagesCollapseAuth" aria-expanded="false"
+                                   aria-controls="pagesCollapseAuth">
+                                    ZARA
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="DocumentsZara" asp-action="OfficialDocuments"><i style="margin-right:5px; color: darkgoldenrod;" class="far fa-file-pdf"></i> Strateško planiranje</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages1"
+                           aria-expanded="false" aria-controls="collapsePages1">
+                            <div class="sb-nav-link-icon"><i style="color: cornflowerblue;" class="fas fa-columns"></i></div>
+                            SRPJ
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages1" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#pagesCollapseAuth" aria-expanded="false"
+                                   aria-controls="pagesCollapseAuth">
+                                    JLS
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="pagesCollapseAuth" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="LocalGovernments" asp-action="Index"><i style="margin-right:5px; color: cornflowerblue;" class="far fa-edit"></i>Pregled i uređenje</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#population"
+                           aria-expanded="false" aria-controls="population">
+                            <div class="sb-nav-link-icon"><i style="color: indianred;" class="fas fa-users"></i></div>
+                            Stanovništvo
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="population" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#naturalChange" aria-expanded="false"
+                                   aria-controls="naturalChange">
+                                    Prirodna promjena
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="naturalChange" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="NaturalChangePopulation" asp-action="Index"><i style="margin-right:5px; color: indianred;" class="far fa-edit"></i>Pregled i uređenje</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2"
+                           aria-expanded="false" aria-controls="collapsePages2">
+                            <div class="sb-nav-link-icon"><i style="color: darkorange;" class="fas fa-road"></i></div>
+                            Infrastruktura
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages2" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#roads" aria-expanded="false"
+                                   aria-controls="roads">
+                                    Ceste
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="roads" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="Roads" asp-action="Index"><i style="margin-right:5px; color: darkorange;" class="far fa-edit"></i>Pregled i uređenje</a>
+                                    </nav>
+                                </div>
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#railRoad" aria-expanded="false"
+                                   aria-controls="railRoad">
+                                    Željeznice
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="railRoad" aria-labelledby="headingOne"
+                                     data-parent="#sidenavAccordionPages">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <a class="nav-link admin-nested-links" asp-controller="Railroads" asp-action="Index"><i style="margin-right:5px; color: darkorange;" class="far fa-edit"></i>Pregled i uređenje</a>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages3"
+                           aria-expanded="false" aria-controls="collapsePages3">
+                            <div class="sb-nav-link-icon"><i style="color: red;" class="fas fa-file-signature"></i></div>
+                            Propisi
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages3" aria-labelledby="headingOne"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link admin-nested-links" asp-controller="Regulations" asp-action="Index"><i style="margin-right:5px; color: red;" class="far fa-edit"></i>Pregled i uređenje</a>
+                            </nav>
+                        </div>
+                        <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages4"
+                           aria-expanded="false" aria-controls="collapsePages4">
+                            <div class="sb-nav-link-icon"><i style="color: mediumpurple;" class="fas fa-file-export"></i></div>
+                            Izrada izvješća
+                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                        </a>
+                        <div class="collapse" id="collapsePages4" aria-labelledby="headingTwo"
+                             data-parent="#sidenavAccordion">
+                            <nav class="sb-sidenav-menu-nested nav">
+                                <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="SpatialPlansReport"><i style="margin-right:5px; color: mediumpurple;" class="far fa-map"></i>Prostorni planovi</a>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#infrastructure" aria-expanded="false"
+                                   aria-controls="infrastructure">
+                                    Infrastruktura
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="infrastructure" aria-labelledby="headingOne"
+                                     data-parent="#roadsReport">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <nav class="sb-sidenav-menu-nested nav accordion" id="roadsReport">
+                                            <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                               data-target="#roadsCollapse" aria-expanded="false"
+                                               aria-controls="roadsCollapse">
+                                                Ceste
+                                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                            </a>
+                                            <div class="collapse" id="roadsCollapse" aria-labelledby="headingOne"
+                                                 data-parent="#roadsReport">
+                                                <nav class="sb-sidenav-menu-nested nav">
+                                                    <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="RoadsReport"><i style="margin-right:7px; color: mediumpurple;" class="fas fa-road"></i>Ceste</a>
+                                                    <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="RoadsLocalGovernmentReport"><i style="margin-right:7px; color: mediumpurple;" class="fas fa-road"></i>Ceste po JLS</a>
+                                                </nav>
+                                            </div>
+                                        </nav>
+                                    </nav>
+                                </div>
+                                <div class="collapse" id="infrastructure" aria-labelledby="headingOne"
+                                     data-parent="#railroads">
+                                    <nav class="sb-sidenav-menu-nested nav">
+                                        <nav class="sb-sidenav-menu-nested nav accordion" id="railroads">
+                                            <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                               data-target="#railroadsCollapse" aria-expanded="false"
+                                               aria-controls="railroadsCollapse">
+                                                Željeznice
+                                                <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                            </a>
+                                            <div class="collapse" id="railroadsCollapse" aria-labelledby="headingOne"
+                                                 data-parent="#railroads">
+                                                <nav class="sb-sidenav-menu-nested nav">
+                                                    <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="RailroadsReport"><i style="margin-right:7px; color: mediumpurple;" class="fas fa-train"></i>Željeznice</a>
+                                                    <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="RailroadsLocalGovernmentReport"><i style="margin-right:7px; color: mediumpurple;" class="fas fa-train"></i>Željeznice po JLS</a>
+                                                </nav>
+                                            </div>
+                                        </nav>
+                                    </nav>
+                                </div>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#naturalChangePopulation" aria-expanded="false"
+                                   aria-controls="naturalChangePopulation">
+                                    Stanovništvo
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="naturalChangePopulation" aria-labelledby="headingOne"
+                                     data-parent="#naturalChange">
+                                    <nav class="sb-sidenav-menu-nested nav accordion" id="naturalChange">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                           data-target="#naturalChangeCollapse" aria-expanded="false"
+                                           aria-controls="naturalChangeCollapse">
+                                            Prirodni prirast
+                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                        </a>
+                                        <div class="collapse" id="naturalChangeCollapse" aria-labelledby="headingOne"
+                                             data-parent="#naturalChange">
+                                            <nav class="sb-sidenav-menu-nested nav">
+                                                <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="NaturalChangeReport"><i style="margin-right:7px; color: mediumpurple;" class="fas fa-users"></i>Prirodni prirast</a>
+                                            </nav>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </nav>
+                            <nav class="sb-sidenav-menu-nested nav accordion" id="sidenavAccordionPages">
+                                <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                   data-target="#officialDocumentsC" aria-expanded="false"
+                                   aria-controls="officialDocumentsC">
+                                    Dokumenti
+                                    <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                </a>
+                                <div class="collapse" id="officialDocumentsC" aria-labelledby="headingOne"
+                                     data-parent="#officialZara">
+                                    <nav class="sb-sidenav-menu-nested nav accordion" id="officialZara">
+                                        <a class="nav-link collapsed" href="#" data-toggle="collapse"
+                                           data-target="#officialDocumentsChangeZara" aria-expanded="false"
+                                           aria-controls="officialDocumentsChangeZara">
+                                            ZARA
+                                            <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
+                                        </a>
+                                        <div class="collapse" id="officialDocumentsChangeZara" aria-labelledby="headingOne"
+                                             data-parent="#officialZara">
+                                            <nav class="sb-sidenav-menu-nested nav">
+                                                <a class="nav-link admin-nested-links" asp-controller="Reports" asp-action="OfficialDocumentZaraReport"><i style="margin-right:7px; color: mediumpurple;" class="far fa-file-pdf"></i>Dokumenti strateškog planiranja</a>
+                                            </nav>
+                                        </div>
+                                    </nav>
+                                </div>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+                <partial name="_LoginAdminPartial" />
+            </nav>
+        </div>
+        <div id="layoutSidenav_content">
+            <main>
+                <div class="container-fluid">
+                    <br />
+                    @RenderBody()
+                    <br />
+                </div>
+            </main>
+            <footer class="py-4 bg-light mt-auto">
+                <div class="container-fluid">
+                    <div class="d-flex align-items-center justify-content-between small">
+                        <div class="text-muted">&copy; Grad Ludbreg (Alfa verzija) @string.Format("{0} .", System.DateTime.Now.Year.ToString())</div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.15.0/umd/popper.min.js" integrity="sha384-L2pyEeut/H3mtgCBaUNw7KWzp5n9&#43;4pDQiExs933/5QfaTh8YStYFFkOzSoXjlTb" crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/jqueryui/jquery-ui.min.js"></script>
+    <script src="~/lib/coreui/coreui.min.js"></script>
+    <script src="~/lib/Chart.js/Chart.min.js"></script>
+    <script src="~/lib/chartjs-plugin-datalabels/dist/chartjs-plugin-datalabels.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/openlayers/openlayers.github.io@master/en/v6.3.1/build/ol.js"></script>
+
+    <script>
+        (function ($) {
+            "use strict";
+            // Toggle the side navigation
+            $("#sidebarToggle").on("click", function (e) {
+                e.preventDefault();
+                $("body").toggleClass("sb-sidenav-toggled");
+            });
+        })(jQuery);
+    </script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>

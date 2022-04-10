@@ -1,0 +1,51 @@
+﻿https://codingblast.com/entity-framework-core-generic-repository/ -prikaz generičkih repositorija
+
+
+1. Kad preuzimamo WebCode.Generator.Design onda moramo obratiti pozornost na to da preuzmemo verziju 2.0.4
+	https://github.com/aspnet/Scaffolding/issues/771
+
+2. FIX GREŠKE IIS EXPRESS 500.19 cannot read configuration file - web.config  (meni se javilo dok sam kopirao solution s jednog na drugo računalo)
+	desni klik na solution --> properties--> debug i promijenimo web server settings za jednog više nego prije ()
+	npr. ako je na prijašnjem računalu bilo (http://localhost:49842/) na sljedećem će biti (http://localhost:49843/)
+
+3. Ako želimo promijeniti putanju migracije da nam se recimo nalazi unutar Data/Migrations možemo napraviti prilikom dodavanja početne migracije 
+  --Add-Migration Initial -OutPutDir Data/Migrations
+
+ 4. Parsiranje jsona putem viewmodela (MenuItems/Create)
+ https://stackoverflow.com/questions/50056518/ijsonhelper-does-not-contain-a-definition-for-encode
+
+ 5. Ne vidi se baza u Managment studio, treba promijeniti conn string
+
+https://stackoverflow.com/questions/41042829/how-do-i-point-to-my-full-sql-server-express-database-in-asp-net-core-project
+
+--STARO
+    "DefaultConnection": "Server=(localdb)\\mssqllocaldb;Database=TangyRepo;Trusted_Connection=True;MultipleActiveResultSets=true"
+--NOVO
+	 "ConnectionStrings": {
+    "DefaultConnection": "Server=.\\SQLExpress;Database=netCore.Project;Trusted_Connection=True;MultipleActiveResultSets=true"  
+},
+
+---------------
+Ako nam se dbcontext nalazi u drugom class librariju onda moramo napraviti sljedeće korake:
+https://stackoverflow.com/questions/38705694/add-migration-with-different-assembly
+https://github.com/bricelam/Sample-SplitMigrations
+
+1. Prvo u startup klasu dodamo property za assembly migracija gdje navodimo gdje ćemo ga smjestiti
+string assemblyName = typeof(ApplicationDbContext).Namespace;
+
+services.AddDbContext<ApplicationDbContext>(options => 
+                                            options.UseSqlServer
+                                            (Configuration.GetConnectionString("DefaultConnection"),x => x.MigrationsAssembly(assemblyName)));
+
+2. Nakon toga idemo u konzoli pozicioniramo se u folder/solution/class library unutar kojeg se nalazi ApplicationDBContext (npr. DAL)
+
+  cd DAL
+
+3. Nakon toga izvrsimo sljedeću naredbu
+add-migration NazivInicijalneMigracije -Project DAL
+
+4. Javila se greška da nedostaje SqlServerValueGenerationStrategy. U tom slučaju moramo instalirati unutar tog class librarija Microsoft.EntityFrameworkCore.SqlServer
+
+5. POVEĆANJE UPLOADA 
+dodavanje web.config-a s dodatnim postavkama
+više o rješenju na sljedećoj stranici: https://stackoverflow.com/questions/38698350/increase-upload-file-size-in-asp-net-core

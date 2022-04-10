@@ -1,0 +1,114 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.Reports.SpatialDocumentsReportVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item" aria-current="page">Izrada izvješća</li>
+        <li class="breadcrumb-item active" aria-current="page">Prostorni planovi</li>
+    </ol>
+</nav>
+<div class="row">
+    <div class="col-md-4 offset-md-3">
+        <p class="lead">
+            Izrada izvješća po JLS
+        </p>
+        <hr />
+        <form asp-action="GetSpatialPlans" id="spatialPlanReportForm">
+            <div class="edit-administration-form">
+                <div class="form-row">
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="localGovernmentList">Jedinice lokalne samouprave</label>
+                        <select class="form-control" id="localGovernmentId" name="LocalGovernmentReportId" asp-items="@(new SelectList(Model.LocalGovernmentAdministrations, nameof(LocalGovernmentAdministration.Id), nameof(LocalGovernmentAdministration.Name)))">
+                            <option value="" selected="">Odaberite JLS</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="spatialPlanLevels">Razina plana</label>
+                        <select class="form-control" id="spatialPlanLevelsId" name="SpatialPlanLevelReportId" asp-items="@(new SelectList(Model.SpatialPlanLevels, nameof(SpatialPlanLevel.Id), nameof(SpatialPlanLevel.ShortName)))">
+                            <option value="" selected="">Odaberite razinu</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="measureSpatialPlan">Mjerilo plana</label>
+                        <select class="form-control" id="measureSpatialPlanId" name="MeasureSpatialReportId" asp-items="@(new SelectList(Model.SpatialMeasures, nameof(SpatialMeasure.Id), nameof(SpatialMeasure.Name)))">
+                            <option value="" selected="">Odaberite mjerilo</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="spatialPlanners">Izrađivači plana</label>
+                        <select class="form-control" id="spatialPlannersId" name="SpatialPlannersReportId" asp-items="@(new SelectList(Model.SpatialPlanners, nameof(SpatialPlanner.Id), nameof(SpatialPlanner.Name)))">
+                            <option value="" selected="">Odaberite izrađivača</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="planStatus">Status plana</label>
+                        <select class="form-control" id="planStatusId" name="PlanStatusReportId" asp-items="@(new SelectList(Model.SpatialPlanStatuses, nameof(SpatialPlanStatus.Id), nameof(SpatialPlanStatus.Name)))">
+                            <option value="" selected="">Odaberite status plana</option>
+                            <option value="0">Sve</option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-8 offset-md-2">
+                        <label for="yearsId">Odaberite godinu donošenja planova</label>
+                        <select class="form-control" id="yearsId" name="YearsReportId">
+                            <option value="" selected="">Odaberite godinu</option>
+                            @foreach (var year in Model.Years)
+                            {
+                                <option value="@year">@year</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <button type="submit" class="btn btn-outline-success" id="spatialPlans"><i class="fa fa-check"></i> Izradi izvješće</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+   label.error{
+        color:red;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+
+        $(function () {
+            $("#spatialPlanReportForm").validate({
+                rules: {
+                    LocalGovernmentReportId: "required",
+                    SpatialPlanLevelReportId: "required",
+                    MeasureSpatialReportId: "required",
+                    SpatialPlannersReportId: "required",
+                    PlanStatusReportId: "required"
+                },
+                messages: {
+                    LocalGovernmentReportId: "Molimo odaberite JLS",
+                    SpatialPlanLevelReportId: "Molimo odaberite razinu plana",
+                    MeasureSpatialReportId: "Molimo odaberite mjerilo plana",
+                    SpatialPlannersReportId: "Molimo odaberite izrađivača plana",
+                    PlanStatusReportId: "Molimo odaberite status plana",
+                },
+                submitHandler: function (form) {
+                    form.submit();
+                }
+            });
+        });
+
+    </script>
+
+}

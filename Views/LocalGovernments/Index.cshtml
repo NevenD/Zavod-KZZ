@@ -1,0 +1,166 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.LocalGovernmentIndexVM
+
+@{
+    ViewData["Title"] = "Index";
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    var isSigned = SignInManager.IsSignedIn(User);
+    var containerClass = string.Empty;
+
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+}
+
+    <div class="@containerClass">
+
+        @if (isSigned)
+        {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                    <li class="breadcrumb-item active" aria-current="page">Prostorne jedinice (JLS)</li>
+                </ol>
+            </nav>
+        }
+        else
+        {
+            <br />
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                    <li class="breadcrumb-item active" aria-current="page">Prostorne jedinice (JLS)</li>
+                </ol>
+            </nav>
+        }
+
+        <style>
+            .accordion > .card > .card-header {
+                border-radius: 0;
+                margin-bottom: 0px !important;
+            }
+        </style>
+        <p class="lead">
+            Podaci preuzeti iz <a href="http://www.prostor-kzz.hr/stanje-u-prostoru.html">Izvješća o stanju u prostoru Krapinsko-zagorske županije za razdoblje 2011. – 2015. godine</a>.
+        </p>
+
+        <br />
+
+
+        <div class="row">
+            <div class="col-8">
+                <p class="lead">
+                    Sustav naselja i stanovništvo KZŽ
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="accordion" id="accordionExample">
+                        <div class="card">
+                            <div class="card-header" id="headingOne">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#localGovernmentTable" aria-expanded="true" aria-controls="localGovernmentTable">
+                                        Popis jedinica lokalne samouprave
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="localGovernmentTable" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                <div class="card-body">
+
+                                    @await Html.PartialAsync("_LocalGovernmentsTable", model: Model.LocalGovernmentAdministrations)
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingThree">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#settlementsTable" aria-expanded="false" aria-controls="settlementsTable">
+                                        Popis naselja
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="settlementsTable" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    @await Html.PartialAsync("_SettlementsTable", model: Model.Settlements)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#populationTable" aria-expanded="false" aria-controls="populationTable">
+                                        Kretanje broja stanovnika po gradovima/općinama
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="populationTable" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    @await Html.PartialAsync("_LocalGovernmentsPopulationTable", model: Model.LocalGovernmentAdministrations)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-header" id="headingTwo">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#localAdministrationStructure" aria-expanded="false" aria-controls="localAdministrationStructure">
+                                        Struktura JLS
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="localAdministrationStructure" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+                                <div class="card-body">
+                                    @await Html.PartialAsync("_LocalGovernmentStructure", model: Model.LocalGovernmentAdministrations)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div class="col-4">
+                @await Html.PartialAsync("_LocalGovernmentsList", model: Model.LocalGovernmentAdministrations)
+            </div>
+        </div>
+
+    </div>
+    @section Scripts {
+        @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+        <script>
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+        $(document).ready(function () {
+            $('#localGovernment,#localGovernmentPopulation,#settlements,#localGovernmentStructure').DataTable({
+                dom: 'Bfrtip',
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                buttons: [{
+                    text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                    className: 'btn btn-outline-success',
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data',
+                    title: 'Tablica_' + dateToday
+                }]
+            });
+
+            $("#selectLocalAdministration").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $("#listKZZ a").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+
+        });
+        </script>
+
+    }
+

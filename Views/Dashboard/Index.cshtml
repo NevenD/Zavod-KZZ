@@ -1,0 +1,220 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.DashboardIndexVM
+@using static ZAVOD_KZZ.Helpers.SpatialPlanDocumentExtensions.SpatialPlanDocumentHelper
+@{
+    ViewData["Title"] = "Pregled";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var lastFivePlans = Model.SpatialPlanDocuments.OrderByDescending(x => x.DateAdded).Take(5);
+
+    var regulationCount = Model.Regulations.Count();
+    var dateToday = DateTime.Now.ToShortDateString();
+    var lastYear = (Model.NaturalChangeByYear.Any()) ? Model.NaturalChangeByYear.Max(x => x.Year).ToString() : "-";
+    var firstYear = (Model.NaturalChangeByYear.Any()) ? Model.NaturalChangeByYear.Min(x => x.Year).ToString() : "-";
+}
+    <style>
+        .map {
+            height: 600px;
+        }
+        .ol-control button {
+            margin: 2px !important;
+            color: #009244 !important;
+            font-size: 1.4em !important;
+            height: 1.475em !important;
+            width: 1.475em !important;
+            background-color: rgb(255, 254, 254) !important;
+        }
+    </style>
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Početni prikaz</li>
+    </ol>
+</nav>
+<br />
+<div class="row">
+    <div class="col-xl-3 col-md-6">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-muted"><i style="color: greenyellow;" class="far fa-map fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2">Ukupno planova: <b>@Model.TotalPlans</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 ">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-warning"><i class="fas fa-road fa-3x"></i><i class="fas fa-train fa-2x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2">Infrastruktura: <b>@Model.InfrastructureCount</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 ">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3"><i style="color: darkgoldenrod;" class="far fa-file-pdf fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2">Ukupno dodanih Akata: <b>@Model.OfficialDocumentsZaraCount</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6 ">
+        <div class="edit-administration-form">
+            <div class="media">
+                <p class="align-self-center mr-3 text-success"><i style="color: red;" class="fas fa-file-signature fa-3x"></i></p>
+                <div class="media-body">
+                    <p class="lead mt-2">Ukupno dodanih zakona: <b>@regulationCount</b></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-5">
+        <div style="display: flex;align-items: center;">
+        </div>
+        <p class="lead">
+            Pregled pohranjene dokumentacije u sklopu dodanih Akata
+        </p>
+        <hr />
+        <div class="edit-administration-form">
+            <table class="table table-bordered small" id="blobsList" style="width:100%">
+                <thead>
+                    <tr>
+                        <th>Naziv</th>
+                        <th>Veza na dokument</th>
+                        <th>Tip dokumenta</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Blobs)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                <a href="@item.DocumentUrl" target="_blank" rel="noopener">
+                                    <img src="~/images/pdflogo.png" width="18" height="18"> Poveznica
+                                </a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ContainerName)
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <p class="lead">
+            Dodani zakoni
+        </p>
+        <hr />
+        <div class="edit-administration-form">
+            <div class="edit-administration-form">
+                <div class="timeline-container">
+                    <ul class="timeline" style="margin-right:10px">
+                        @foreach (var regulation in Model.Regulations)
+                        {
+                            <li style="margin-bottom: 30px;">
+                                <p><b>@string.Format("{0} - ({1})", regulation.Name, regulation.Number) </b></p>
+                                <hr style="margin-top:-10px;" />
+                                <p style="margin-top:-10px" class="spatial-plans-list">Tip zakona:  <b>@regulation.RegulationType.Name</b></p>
+                                <p class="spatial-plans-list">Poveznica:  <b><a href="@regulation.Url" target="_blank" rel="noopener noreferrer">@string.Format("{0}  - {1}", regulation.Name, regulation.Number) </a></b></p>
+                                @if (regulation.RegulationEffectiveDate.HasValue)
+                                {
+                                    <p class="spatial-plans-list">Datum stupanja na snagu: <b>@regulation.RegulationEffectiveDate.Value.ToShortDateString()</b></p>
+                                }
+                                else
+                                {
+                                    <p class="spatial-plans-list">Datum stupanja na snagu: <b>Nije dostupan</b></p>
+                                }
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <p class="lead">
+            @string.Format("Prirodno kretanje {0}. do {1}.", firstYear, lastYear)
+        </p>
+        <hr />
+
+        <div class="edit-administration-form">
+            <div class="edit-administration-form">
+                <div class="timeline-container">
+                    <ul class="timeline" style="margin-right:10px">
+                        @foreach (var naturalChange in Model.NaturalChangeByYear)
+                        {
+                            <li style="margin-bottom: 30px;">
+                                <p><b>@naturalChange.Year </b></p>
+                                <hr style="margin-top:-10px;" />
+                                <p class="spatial-plans-list">Prirodni prirast: <b>@naturalChange.NaturalChange</b></p>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="edit-administration-form">
+            <div id="map" class="map"></div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+
+    <script>
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+        $('[data-toggle="tooltip"]').tooltip();
+        $('#blobsList').DataTable({
+                dom: 'Bfrtip',
+                scrollX: true,
+                pageLength: 3,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                buttons: [{
+                    text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                    className: 'btn btn-outline-success',
+                    extend: 'excelHtml5',
+                    autoFilter: true,
+                    sheetName: 'Exported data',
+                    title: 'Tablica_' + dateToday
+                }],
+                bLengthChange: false,
+        });
+
+        const map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+            ],
+            view: new ol.View({
+                center: [16.025, 46.111],
+                zoom: 11,
+                projection: 'EPSG:4326'
+            })
+        });
+    </script>
+}

@@ -1,0 +1,212 @@
+﻿@{
+
+    var dguCadastreKey = DGUApiKeys.CadastreDGU;
+    var digitalElevationDGUKey = DGUApiKeys.DigitalElevationDGU;
+
+ }
+
+    <script asp-append-version="true">
+
+        let dguCadastre = @Html.Raw(Json.Serialize(dguCadastreKey));
+        let dguDMR = @Html.Raw(Json.Serialize(digitalElevationDGUKey));
+
+        let selectedStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: "#39b54a66"
+            }),
+            stroke: new ol.style.Stroke({
+                color: "#FFEB3B",
+                width: 8
+            }),
+        });
+        let defaultStyle = new ol.style.Style({
+            fill: new ol.style.Fill({
+                color: 'rgba(255,255,255,0.4)'
+            }),
+            stroke: new ol.style.Stroke({
+                color: '#3399CC',
+                width: 1.25
+            })
+        });
+
+
+
+        let highlightLayer = new ol.layer.Vector({
+            source: new ol.source.Vector(),
+            style: selectedStyle,
+            zIndex: Infinity
+        });
+
+ 
+
+    let dguDof = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: 'https://geoportal.dgu.hr/wms',
+            params: {
+                LAYERS: 'DOF',
+                FORMAT: 'image/png',
+                TRANSPARENT: true
+            },
+            attributions: 'DOF (2000. - 2009.) DGU Geoportal',
+            zIndex: 6666
+        })
+    });
+
+    let dguTk = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: 'https://geoportal.dgu.hr/services/tk/wms',
+            params: {
+                LAYERS: 'TK25',
+                FORMAT: 'image/png',
+                TRANSPARENT: true
+            },
+            attributions: 'DOF (1996. - 2010.) DGU Geoportal'
+        })
+    });
+
+
+    let dguHok = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: 'https://geoportal.dgu.hr/services/hok/wms',
+            params: {
+                LAYERS: 'HOK5',
+                FORMAT: 'image/png',
+                TRANSPARENT: true
+            },
+            attributions: 'HOK (2010.) DGU Geoportal'
+        })
+    });
+
+    let dguCadastral = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: "https://oss.uredjenazemlja.hr/OssWebServices/inspireService/wms?token=" + dguCadastre,
+            params: {
+                LAYERS: "CP.CadastralZoning,CP.CadastralParcel",
+                FORMAT: "image/png",
+                TRANSPARENT: true
+            },
+            zIndex: 9999
+        })
+    });
+
+    let dguRelief = new ol.layer.Tile({
+        source: new ol.source.TileWMS({
+            url: "https://geoportal.dgu.hr/services/auth/dmr/wms?authKey=" + dguDMR,
+            params: {
+                LAYERS: "DMR_BW",
+                FORMAT: "image/png",
+                TRANSPARENT: true
+            },
+            hidpi: true,
+            crossOrigin: 'anonymous',
+            serverType: 'geoserver'
+        }),
+
+    });
+
+        const map = new ol.Map({
+            target: 'map',
+            layers: [
+                new ol.layer.Tile({
+                    source: new ol.source.OSM()
+                }),
+                dguDof,
+                highlightLayer
+            ],
+            view: new ol.View({
+                center: [16.025, 46.111],
+                zoom: 11,
+                projection: 'EPSG:4326'
+            })
+        });
+
+        function calculateLengthForFeature(feature) {
+            let linestring = feature.getGeometry();
+            let length = ol.sphere.getLength(linestring);
+            let lengthvalue = length * 100;
+
+            return lengthvalue.toLocaleString('hr-HR', { minimumFractionDigits: 3 }) + " km";
+        }
+
+
+        function calculateLength(element, features) {
+            let calculation = 0;
+            for (let feature of features) {
+                let linestring = feature.getGeometry();
+                let length = ol.sphere.getLength(linestring);
+                let lengthValue = length * 100;
+                calculation += lengthValue;
+            }
+            element.value = calculation.toLocaleString('hr-HR', { minimumFractionDigits: 3 });
+        }
+
+        const COORDINATES_FORMAT = {
+            OPENLAYERS_API: 1
+        }
+        function createLineStringFeature(coordsString) {
+            let allCords = [];
+            let splitedCoord = coordsString.split(";");
+            for (let coord of splitedCoord) {
+                let currentCoord = coord.split(',');
+                if (currentCoord.length > 1) {
+                    let pos = [parseFloat(currentCoord[0]), parseFloat(currentCoord[1])];
+                    allCords.push(pos);
+                }
+            }
+
+            if (allCords.length > 0) {
+                let featurePoly = new ol.Feature({
+                    geometry: new ol.geom.LineString(allCords)
+                });
+
+                return featurePoly;
+            }
+
+            return new ol.Feature({
+                geometry: new ol.geom.LineString([])
+            })
+        }
+
+        function createPolygonFeature(coords, coordinatesFormat) {
+            let allCords = [];
+            for (let coord of coords) {
+                let currentCoord = coord.split(',');
+                if (currentCoord.length > 1) {
+
+                    if (coordinatesFormat === CoordinateFormatting.OPENLAYERS_API) {
+                        // if we use coordinates from my parcels table then we use additional flag because of switched position of latitude and longitude
+                        let pos = [parseFloat(currentCoord[0]), parseFloat(currentCoord[1])];
+                        allCords.push(pos);
+
+                    } else {
+                        // transform from EPSG:4326 (in our db we save coordinates in EPSG:4326) to EPSG:3857
+                        let pos = [parseFloat(currentCoord[1]), parseFloat(currentCoord[0])];
+                        allCords.push(pos);
+                    }
+                }
+            }
+
+            // create polygon from parsed coordinates
+            if (allCords.length > 0) {
+
+                // validation check if polygons are not properly closed
+                if (allCords[0][0] !== allCords[allCords.length - 1][0] || allCords[0][1] !== allCords[allCords.length - 1][1])
+                    allCords.push(allCords[0]);
+
+                // create new feature that will be passed to vector source
+                let featurePoly = new ol.Feature({
+                    geometry: new ol.geom.Polygon([
+                        allCords
+                    ])
+                });
+
+                return featurePoly;
+            }
+
+
+            // return empty feature if string array is empty
+            return new ol.Feature({
+                geometry: new ol.geom.Polygon([])
+            })
+        }
+    </script>

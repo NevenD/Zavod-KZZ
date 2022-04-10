@@ -1,0 +1,44 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.SpatialPlanDocument>
+@{
+    var count = 1;
+    var thisYear = DateTime.Now.Year.ToString();
+}
+
+<p class="lead">
+    @string.Format("Doneseni Planovi za {0}",thisYear)
+</p>
+<hr />
+<table class="table small" id="spatialPlansActualPlans" style="width:100%">
+    <thead>
+        <tr>
+            <th align="center">RB</th>
+            <th align="center">Naziv Plana</th>
+            <th align="center">Glasnik</th>
+            <th align="center">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model)
+        {
+
+            var className = GetPlanStatusClassStyle(item.SpatialPlanStatus.Name);
+            <tr>
+                <td class="@className">
+                    @count
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @string.Format("{0} {1}", item.OfficalSpatialNews.Name, item.OfficialSpatialNewsNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpatialPlanStatus.Name)
+                </td>
+            </tr>
+
+            count++;
+        }
+    </tbody>
+</table>

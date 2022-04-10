@@ -1,0 +1,59 @@
+﻿@using ZAVOD_KZZ.Helpers.Translations
+@model IEnumerable<ZAVOD_KZZ.Core.Models.OfficialDocumentZara>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+      var isSigned = SignInManager.IsSignedIn(User);
+*@
+@{ 
+    var isSigned = SignInManager.IsSignedIn(User);
+}
+
+<table class="table table-sm  table-bordered small display nowrap" id="officialDocumentsZara" style="width:100%">
+    <thead>
+        <tr>
+            <th>@TranslationsLabels.Name</th>
+            <th>Status dokumenta</th>
+            <th>Datum stupanja na snagu</th>
+            <th>Akcije</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            var customStyle = GetOfficialDocumentStatusStyle(item.DocumentStatusZara.Id);
+
+        <tr>
+            <td style="@customStyle">
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DocumentStatusZara.Name)
+            </td>
+            <td>
+                @if (item.DocumentEffectiveDate.HasValue)
+                {
+                    @item.DocumentEffectiveDate.Value.ToShortDateString()
+                }
+                else
+                {
+                    <text> - </text>
+                }
+            </td>
+            @if (isSigned)
+            {
+                <td>
+                    <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                    <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="right" title="Izbriši" data-official-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                    <button  class="btn btn-outline-primary btn-sm js-details" data-officialDocument-details="@item.Id" data-toggle="tooltip" data-placement="right" title="Detalji"><i class="fas fa-info"></i></button>
+                </td>
+            }
+            else
+            {
+                <td>
+                    <button class="btn btn-outline-primary btn-sm js-details" data-officialDocument-details="@item.Id" data-toggle="tooltip" data-placement="right" title="Detalji"><i class="fas fa-info"></i></button>
+                </td>
+            }
+        </tr>
+        }
+    </tbody>
+</table>

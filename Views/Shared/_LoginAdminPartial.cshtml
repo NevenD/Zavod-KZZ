@@ -1,0 +1,11 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+@inject UserManager<IdentityUser> UserManager
+
+<div class="sb-sidenav-footer">
+    <div class="small">Prijavljeni kao:</div>
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <p>@User.Identity.Name</p>
+    }
+</div>

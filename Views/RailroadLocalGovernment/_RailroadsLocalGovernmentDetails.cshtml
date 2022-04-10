@@ -1,0 +1,382 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RailroadsLocalGovernmentDetailsVM
+
+@{
+    var isSigned = SignInManager.IsSignedIn(User);
+    var containerClass = string.Empty;
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    var administration = string.Empty;
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    if (Model.LocalGovernmentAdministration.IsAdministrativeCity == true)
+    {
+        administration = "Grada";
+    }
+    else
+    {
+        administration = "Općina";
+    }
+
+    var stackedData = Model.RailroadsForStackedChart;
+
+    var sumRailroadValue = Model.RailroadsLocalGovernment.Sum(x => x.RailroadLength).ToString();
+}
+<div class="@containerClass">
+    @if (isSigned)
+    {
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                <li class="breadcrumb-item" aria-current="page">Infrastruktura</li>
+                <li class="breadcrumb-item"><a asp-controller="Railroads" asp-action="Index">Željeznička infrastruktura</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+            </ol>
+        </nav>
+    }
+    else
+    {
+        <br />
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                <li class="breadcrumb-item"><a asp-controller="Railroads" asp-action="Index">Željeznička infrastruktura</a>
+                <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+            </ol>
+        </nav>
+    }
+
+
+    <p class="lead" style="font-size: 1.6em;">
+        Željeznice na prostoru  @administration  @Model.LocalGovernmentAdministration.Name
+    </p>
+    <hr />
+    <div class="row ">
+        <div class="col-md-8">
+            <div class="edit-administration-form">
+                <div class="card">
+                    <h6 class="card-header">Detalji o željezničkoj infrastrukturi </h6>
+                    <div class="card-body">
+                        <div class="accordion" id="accordionExample">
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData" aria-expanded="true" aria-controls="infoData">
+                                            Željeznice po jedinici lokalne samouprave
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="infoData" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body">
+                                        @if (Model.RailroadsLocalGovernment.Any())
+                                        {
+                                            <table class="table table-sm table-striped table-bordered small display nowrap"
+                                                   width="100%" id="railroadsLocalGovernmentTable">
+                                                <thead>
+                                                    <tr>
+                                                        @if (isSigned)
+                                                        {
+                                                            <th>Akcije</th>
+
+                                                        }
+                                                        <th>
+                                                            Kategorija
+                                                        </th>
+                                                        <th>
+                                                            Oznaka
+                                                        </th>
+                                                        <th class="text-center">
+                                                            Opis
+                                                        </th>
+                                                        <th>
+                                                            Duljina u JLS (km)
+                                                        </th>
+                                                        <th>
+                                                            Duljina u KZŽ (km)
+                                                        </th>
+                                                        <th>
+                                                            Građevinska duljina (km)
+                                                        </th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var item in Model.RailroadsLocalGovernment)
+                                                    {
+                                                    <tr>
+                                                        @if (isSigned)
+                                                        {
+                                                            <td>
+                                                                <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                                                <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="right" title="Izbriši" data-railroad-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                                                            </td>
+                                                        }
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Railroad.RailroadCategory.Name)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Railroad.Code)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Railroad.FullName)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.RailroadLength)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Railroad.Lenght)
+                                                        </td>
+                                                        <td>
+                                                            @Html.DisplayFor(modelItem => item.Railroad.ConstructionLength)
+                                                        </td>
+                                                    </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="accordionExample1">
+                            <div class="card">
+                                <div class="card-header" id="headingOne1">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData1" aria-expanded="true" aria-controls="infoData1">
+                                            Gustoća željeznica u jedinici lokalne samouprave
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="infoData1" class="collapse" aria-labelledby="headingOne1" data-parent="#accordionExample1">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Planirane željeznice:
+                                                <span class="details-population" >@Model.PlannedRailroadDensity</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Lokalne željeznice:
+                                                <span class="details-population">@Model.LocalRailroadDensity</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                Regionalne željeznice:
+                                                <span class="details-population">@Model.RegionalRailroadDensity</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="accordionExample2">
+                            <div class="card">
+                                <div class="card-header" id="headingOne2">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData2" aria-expanded="true" aria-controls="infoData2">
+                                            Udio pojedinih željeznica po jedinicama lokalne samouprave
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="infoData2" class="collapse" aria-labelledby="headingOne2" data-parent="#accordionExample2">
+                                    <div class="card-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                <span style="font-weight:600;">Kategorija</span>
+                                                <span style="font-weight:600;">Duljina</span>
+                                                <span style="font-weight:600;">Postotak</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between  list-group-flush">
+                                                <span>Regionalna: </span>
+                                                <span class="details-population align-items-center" style="margin-right: 30px;"> @Model.RegionalRailroadTotal.Keys.FirstOrDefault()</span>
+                                                <span class="details-population align-items-right">@Model.RegionalRailroadTotal.Values.FirstOrDefault()</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between list-group-flush">
+                                                <span>Lokalna: </span>
+                                                <span class="details-population align-items-center"> @Model.LocalRailroadTotal.Keys.FirstOrDefault()</span>
+                                                <span class="details-population align-items-right"> @Model.LocalRailroadTotal.Values.FirstOrDefault()</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                <span style="font-weight:600;">Sveukupno: </span>
+                                                <span style="font-weight:600; margin-right:75px;">@string.Format("{0} km", sumRailroadValue)</span>
+                                                <span style="font-weight:600;" class="details-population"></span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="edit-administration-form">
+                <canvas id="myChart" style="width:600px; height:800px"></canvas>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div>
+        <a class="btn btn-outline-success" asp-controller="Railroads" asp-action="Index" role="button"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+    </div>
+    <br />
+    <br />
+</div>
+<style>
+    .counter-item-settlement {
+        font-size: small;
+        font-weight: 700;
+    }
+
+    .badge-item-settlement {
+        float: right;
+        margin-top: 15px;
+    }
+</style>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+        let graphArrayDataValuesSorted = @Html.Raw(Json.Serialize(stackedData));
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+        $('[data-toggle="tooltip"]').tooltip();
+
+        let roadsTable = $('#railroadsLocalGovernmentTable').DataTable({
+                dom: 'Bfrtip',
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+            buttons: [{
+                text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                className: 'btn btn-outline-success',
+                extend: 'excelHtml5',
+                autoFilter: true,
+                sheetName: 'Exported data',
+                title: 'Tablica_' + dateToday
+            }],
+                bLengthChange: false,
+          });
+
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["Željeznice"],
+                        datasets: graphArrayDataValuesSorted,
+                    },
+                    options: {
+                    responsive: true,
+                    legend: { position: 'top' },
+                    title: { display: true, text: '' },
+                     scales: {
+                          xAxes: [{
+                            stacked: true,
+                            gridLines: {
+                              display: false,
+                            }
+                          }],
+                          yAxes: [{
+                            stacked: true,
+                            ticks: {
+                              beginAtZero: true,
+                            },
+                            type: 'linear',
+                          }]
+                    },
+                    legend: {
+                        display: true,
+                        onHover: function (e) {
+                            e.target.style.cursor = 'pointer';
+                        }
+                    },
+                    tooltips: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return `${data.labels[tooltipItem.index]}:  ${data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]} km`;
+                            }
+                        }
+                    },
+                    hover: {
+                        onHover: function (e) {
+                            let point = this.getElementAtEvent(e);
+                            if (point.length) e.target.style.cursor = 'pointer';
+                            else e.target.style.cursor = 'default';
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            color: '#fff',
+                            anchor: 'end',
+                            align: 'start',
+                            offset: -10,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            borderRadius: 25,
+                            backgroundColor: (con) => {
+                                return con.dataset.backgroundColor;
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: '10'
+                            },
+                            formatter: (value) => {
+                                let formatPerc = `${value} km`;
+                                return formatPerc;
+
+                            }
+                        }
+                    }
+                },
+
+            });
+
+        $("#railroadsLocalGovernmentTable").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabranu željeznicu?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/RailroadLocalGovernment/DeleteRailoadLocalGovernment/";
+                            let id = button.attr("data-railroad-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    roadsTable.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+
+    </script>
+
+}
+

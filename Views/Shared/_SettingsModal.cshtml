@@ -1,0 +1,220 @@
+﻿
+    <div class="modal fade" id="settingsMap" tabindex="-1" data-backdrop="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Postavke</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <nav>
+                                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                    <a class="nav-item nav-link active" id="nav-layers-tab" data-toggle="tab" href="#nav-layers" role="tab" aria-controls="nav-layers" aria-selected="false"><i class="fas fa-layer-group"></i>&nbsp;&nbsp;Globalni slojevi</a>
+                                    @*<a class="nav-item nav-link" id="nav-settings-tab" data-toggle="tab" href="#nav-settings" role="tab" aria-controls="nav-settings" aria-selected="false"><i class="fas fa-cog"></i>&nbsp;&nbsp;Postavke karte</a>*@
+                                </div>
+                            </nav>
+                            <div class="tab-content" id="nav-tabContent">
+                                <div class="tab-pane fade show active" id="nav-layers" role="tabpanel" aria-labelledby="nav-layers-tab">
+                                    <div style="margin-right: 10px;">
+                                        <br />
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <div class="row" style="font-size: 0.8em">
+                                                    <div class="col-md-4">
+                                                        <b>Naziv sloja</b>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <b>Aktivacija</b>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <b>Prozirnost</b>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>DOF (2011.god.)</i>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"  checked id="dofswitch">
+                                                            <label class="custom-control-label" for="dofswitch"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <diV class="slider_opacity" style="margin-top: 10px;">
+                                                            <div id="dofSlider" class="slider-custom">
+                                                                <div id="custom-handle-maps" class="ui-slider-handle"></div>
+                                                            </div>
+                                                        </diV>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>TK25</i>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="tkswitch">
+                                                            <label class="custom-control-label" for="tkswitch"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <diV class="slider_opacity" style="margin-top: 10px;">
+                                                            <div id="tkSlider" class="slider-custom">
+                                                                <div id="custom-handle-maps" class="ui-slider-handle"></div>
+                                                            </div>
+                                                        </diV>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>HOK (1:5000)</i>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="hokswitch">
+                                                            <label class="custom-control-label" for="hokswitch"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <diV class="slider_opacity" style="margin-top: 10px;">
+                                                            <div id="hokSlider" class="slider-custom">
+                                                                <div id="custom-handle-maps" class="ui-slider-handle"></div>
+                                                            </div>
+                                                        </diV>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>DMR (digitalni model reljefa)</i>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="dmrSwitch">
+                                                            <label class="custom-control-label" for="dmrSwitch"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <diV class="slider_opacity" style="margin-top: 10px;">
+                                                            <div id="dmrSlider" class="slider-custom">
+                                                                <div id="custom-handle-maps" class="ui-slider-handle"></div>
+                                                            </div>
+                                                        </diV>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>Katastar</i>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="cadastreswitch">
+                                                            <label class="custom-control-label" for="cadastreswitch"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <diV class="slider_opacity" style="margin-top: 10px;">
+                                                            <div id="cadastreSlider" class="slider-custom">
+                                                                <div id="custom-handle-maps" class="ui-slider-handle"></div>
+                                                            </div>
+                                                        </diV>
+                                                    </div>
+                                                </div>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade show" id="nav-settings" role="tabpanel" aria-labelledby="nav-settings-tab">
+                                    <div style="margin-right: 10px;">
+                                        <br />
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item">
+                                                <div class="row" style="font-size: 0.8em">
+                                                    <div class="col-md-4">
+                                                        <b>Naziv postavke</b>
+                                                    </div>
+                                                    <div class="col-md-4 offset-4">
+                                                        <b>Aktivacija</b>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>Paralele i meridijani</i>
+                                                    </div>
+                                                    <div class="col-md-4 offset-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="graticuleSwitch">
+                                                            <label class="custom-control-label" for="graticuleSwitch"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>Mjerilo</i>
+                                                    </div>
+                                                    <div class="col-md-4 offset-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="measureSwitch">
+                                                            <label class="custom-control-label" for="measureSwitch"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>Prikaz preko cijelog ekrana</i>
+                                                    </div>
+                                                    <div class="col-md-4 offset-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="fullScreen">
+                                                            <label class="custom-control-label" for="fullScreen"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            <li class="list-group-item">
+                                                <div class="row">
+                                                    <div class="col-md-4" style="font-size: 0.8em">
+                                                        <i>Prikaz koordinata</i>
+                                                    </div>
+                                                    <div class="col-md-4 offset-4">
+                                                        <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input" id="coordinatesShow">
+                                                            <label class="custom-control-label" for="coordinatesShow"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-dismiss="modal">Zatvori</button>
+                </div>
+            </div>
+        </div>
+    </div>

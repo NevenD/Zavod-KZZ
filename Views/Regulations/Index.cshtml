@@ -1,0 +1,263 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RegulationsVM
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var lastAdded = Model.Regulations.OrderByDescending(x => x.Id).FirstOrDefault();
+
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    var regulationsLabel = Model.RegulationsGraphChartVM.RegulationsTypes.ToArray();
+    var regulationsValues = Model.RegulationsGraphChartVM.RegulationsTypesCount.ToArray();
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="DashBoard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Propisi </li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-3">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Dodavanje novog propisa
+            </p>
+            <hr />
+            <p style="font-size: 0.95rem;font-weight: 200;">Novo dodani zakon možemo mapirati na pojedine module (infrastruktura, prostorno uređenje)</p>
+            <a class="btn btn-outline-secondary btn-sm btn-block" asp-action="Create"><i class="far fa-file"></i> Dodaj novi propis</a>
+        </div>
+    </div>
+    <div class="col-md-5 offset-4">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Zadnje unesen propis
+            </p>
+            <hr />
+            <div class="media">
+                <div class="media-body">
+                    @if (lastAdded != null)
+                    {
+                        <p class="mt-0">Naziv dokumenta: <b>@string.Format("{0} - ({1})", @lastAdded?.Name, @lastAdded.Number)</b><span class="float-right"><small>Datum pohranjivanja: @lastAdded.DateAdded.Value.ToShortDateString()</small></span></p>
+                        <p class="mb-0">Tip: <b>@lastAdded?.RegulationType.Name</b></p>
+                        <p class="mb-0">Poveznica: <a href="@lastAdded?.Url" target="_blank" rel="noopener noreferrer">@lastAdded?.Url</a></p>
+                        @if (lastAdded != null && lastAdded.RegulationEffectiveDate.HasValue)
+                        {
+                            <p class="mb-0">Datum stupanja na snagu: <b>@lastAdded.RegulationEffectiveDate.Value.ToShortDateString()</b></p>
+                        }
+                    }
+                    else
+                    {
+                        <p class="mt-0">Trenutačno nema dodanih dokumenata</p>
+                    }
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<br />
+<div class="row">
+    <div class="col-6">
+        <div class="edit-administration-form">
+            <p class="lead spatial-status-archived">
+                <span style="margin-left: 7px;">Arhivirani propisi</span>
+            </p>
+            <table class="table  table-bordered small" id="regulations">
+                <thead>
+                    <tr>
+                        <th style="width:300px">
+                            Naziv propisa
+                        </th>
+                        <th>
+                            Tip propisa
+                        </th>
+                        <th>
+                            Datum stupanja na snagu
+                        </th>
+                        <th>Akcije</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Regulations)
+                    {
+                        var className = (item.DateArchived.HasValue) ? "spatial-status-archived" : string.Empty;
+                        <tr>
+                            <td class="@className">
+                                @string.Format("{0} ({1})", item.Name, item.Number)
+                            </td>
+                            <td>
+                                @item.RegulationType.Name
+                            </td>
+                            <td>
+                                @if (item.RegulationEffectiveDate.HasValue)
+                                {
+                                    item.RegulationEffectiveDate.Value.ToShortDateString();
+                                }
+                                else
+                                {
+                                    @: Nepoznato
+                                }
+                            </td>
+                            <td>
+                                <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="top" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                <button class="btn btn-outline-primary btn-sm js-details" data-toggle="tooltip" data-placement="top" title="Detalji" data-spatial-regulations-details="@item.Id"><i class="fas fa-info"></i></button>
+                                <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="top" title="Izbriši" data-spatial-regulations-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="edit-administration-form">
+            <canvas id="regulationsChart" style="width:100%; height:350px"></canvas>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+   
+<script>
+        let graphArrayDataLabels = @Html.Raw(Json.Serialize(regulationsLabel));
+        let graphArrayDataValues = @Html.Raw(Json.Serialize(regulationsValues));
+
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            let dataTable = $('#regulations').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                bLengthChange: false,
+            });
+
+            $("#regulations").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabrani propis?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/Regulations/DeleteRegulation/";
+                            let id = button.attr("data-spatial-regulations-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    dataTable.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+            $(".js-details").click(function () {
+                let url = "/Regulations/Details/";
+                let id = $(this).attr("data-spatial-regulations-details");
+                $.ajax({
+                    type: "GET",
+                    url: `${url}${id}`,
+                    success: function (data) {
+                        bootbox.dialog({
+                            message: data,
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Završi',
+                                    className: 'btn-success'
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+
+            let regulationsChart = document.getElementById('regulationsChart').getContext('2d');
+            new Chart(regulationsChart, {
+                type: 'bar',
+                data: {
+                    labels: graphArrayDataLabels,
+                    datasets: [{
+                        data: graphArrayDataValues,
+                        backgroundColor: "#4dac26",
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    legend: { position: 'top' },
+                    title: { display: true, text: '' },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                beginAtZero: true,
+                                stepSize:1
+                            }
+                        }]
+                    },
+                    legend: {
+                        display: false,
+                        onHover: function (e) {
+                            e.target.style.cursor = 'pointer';
+                        }
+                    },
+                    tooltips: {
+                        enabled: true,
+                        callbacks: {
+                            label: function (tooltipItem, data) {
+                                return `${data.labels[tooltipItem.index]}:  ${data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]}`;
+                            }
+                        }
+                    },
+                    hover: {
+                        onHover: function (e) {
+                            let point = this.getElementAtEvent(e);
+                            if (point.length) e.target.style.cursor = 'pointer';
+                            else e.target.style.cursor = 'default';
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            color: '#fff',
+                            anchor: 'end',
+                            align: 'start',
+                            offset: -10,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            borderRadius: 25,
+                            backgroundColor: (con) => {
+                                return con.dataset.backgroundColor;
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: '10'
+                            },
+                            formatter: (value) => {
+                                let formatPerc = `${value}`;
+                                return formatPerc;
+
+                            }
+                        }
+                    }
+                },
+            })
+        });
+</script>
+
+}

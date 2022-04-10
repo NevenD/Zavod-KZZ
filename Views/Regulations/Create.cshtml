@@ -1,0 +1,154 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RegulationCreateVM
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="DashBoard" asp-action="Index">Upravljačka ploča</a></li>
+        <li class="breadcrumb-item"><a asp-controller="Regulations" asp-action="Index">Propisi</a></li>
+        <li class="breadcrumb-item active" aria-current="page">Dodavanje novog propisa</li>
+
+    </ol>
+</nav>
+<br />
+<div class="row">
+    <div class="col-md-8 offset-2">
+        <p class="lead">
+           Pohranjivanje propisa
+        </p>
+        <hr />
+        <form asp-action="Create">
+            <div class="edit-administration-form">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <label>Naziv propisa</label>
+                        <input asp-for="@Model.Regulation.Name" class="form-control" />
+                        <span asp-validation-for="@Model.Regulation.Name" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Tip propisa</label>
+                        <select class="form-control" asp-for="@Model.Regulation.RegulationTypeID" asp-items="@(new SelectList(Model.RegulationTypes, nameof(RegulationType.Id), nameof(RegulationType.Name)))">
+                            <option value="" selected="">Odaberite kategoriju</option>
+                        </select>
+                        <span asp-validation-for="@Model.Regulation.RegulationTypeID" class="text-danger"></span>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Skraćeni naziv</label>
+                        <input asp-for="@Model.Regulation.ShortName" class="form-control" />
+                        <span asp-validation-for="@Model.Regulation.ShortName" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-8">
+                        <label>Dodatni opis dokumenta</label>
+                        <textarea placeholder="Npr. Zakon je u fazi pisanja" style="max-height:130px; min-height:39px;" asp-for="@Model.Regulation.Description" class="form-control"></textarea>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Broj dokumenta</label>
+                        <input asp-for="@Model.Regulation.Number" class="form-control" placeholder="Npr. NN 13/20" />
+                        <span asp-validation-for="@Model.Regulation.Number" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="form-group col-md-12">
+                        <label>Poveznica na zakon</label>
+                        <input asp-for="@Model.Regulation.Url" class="form-control" placeholder="Npr. https://narodne-novine.nn.hr/clanci/sluzbeni/zakon" />
+                        <span asp-validation-for="@Model.Regulation.Url" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="form-group col-md-6">
+                        <label style="font-size: smaller;" class="control-label">Datum donošenja</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="text" autocomplete="off" asp-for="@Model.Regulation.RegulationPublicationDate" class="form-control datepicker" />
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label style="font-size: smaller;" class="control-label">Datum stupanja na snagu</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="text" autocomplete="off" asp-for="@Model.Regulation.RegulationEffectiveDate" class="form-control datepicker" />
+                        </div>
+                    </div>
+                </div>
+                <p class="lead">
+                    Označite domenu propisa
+                </p>
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-4">
+                        <div class="custom-control custom-switch">
+                            <input asp-for="@Model.Regulation.IsSpatialDocumentRegulation" class="custom-control-input" id="IsSpatialDocumentRegulation">
+                            <label class="custom-control-label" for="IsSpatialDocumentRegulation">Zakon o prostornom uređenju </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="custom-control custom-switch">
+                            <input asp-for="@Model.Regulation.IsSortedRoadRegulation" class="custom-control-input" id="IsSortedRoadRegulation">
+                            <label class="custom-control-label" for="IsSortedRoadRegulation">Zakon o cestama  </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="custom-control custom-switch">
+                            <input asp-for="@Model.Regulation.IsRailRoadRegulation" class="custom-control-input" id="IsRailRoadRegulation">
+                            <label class="custom-control-label" for="IsRailRoadRegulation">Zakon o željeznicama </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="custom-control custom-switch">
+                            <input asp-for="@Model.Regulation.IsWaterSupplyRegulation" class="custom-control-input" id="IsWaterSupplyRegulation">
+                            <label class="custom-control-label" for="IsWaterSupplyRegulation">Zakon o vodi te vodoopskrbi i odvodnji </label>
+                        </div>
+                    </div>
+                    <div class="form-group col-md-4">
+                        <div class="custom-control custom-switch">
+                            <input asp-for="@Model.Regulation.IsOtherRegulation" class="custom-control-input" id="IsOtherRegulation">
+                            <label class="custom-control-label" for="IsOtherRegulation">Ostalo </label>
+                        </div>
+                    </div>
+                </div>
+                <p class="lead">
+                    Dodatni opis 
+                </p>
+                <hr />
+                <div class="row">
+                    <div class="form-group col-md-8">
+                        <label>Ostali detalji</label>
+                        <textarea placeholder="Npr. Zakon se odnosi na Pravilnik o izradi izvješća" style="max-height:130px; min-height:39px;" asp-for="@Model.Regulation.Remark" class="form-control"></textarea>
+                    </div>
+                </div>
+            </div>
+            <br />
+            <div class="form-group">
+                <a class="btn btn-outline-secondary" asp-action="Index" asp-controller="Regulations"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                <button type="submit" class="btn btn-outline-success"><i class="fa fa-check"></i> Pohrani </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+    @{await Html.RenderPartialAsync("_DatePickerPartial");}
+
+    <script>
+        $(document).ready(function () {
+            $(".datepicker").datepicker({
+                dateFormat: "dd.mm.yy.",
+                dayNamesMin: ["Ne", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
+                monthNames: ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"]
+            });
+        });
+    </script>
+}

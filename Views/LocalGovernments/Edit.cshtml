@@ -1,0 +1,139 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.LocalGovernmentAdministrationVM
+
+@{
+    ViewData["Title"] = "Edit";
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    var isSigned = SignInManager.IsSignedIn(User);
+    if (isSigned)
+    {
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+}
+
+    <div class="container">
+        @if (isSigned)
+        {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                    <li class="breadcrumb-item"><a asp-controller="LocalGovernments" asp-action="Index">Prostorne jedinice (JLS)</a>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+                </ol>
+            </nav>
+        }
+        else
+        {
+            <br />
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                    <li class="breadcrumb-item"><a asp-controller="LocalGovernments" asp-action="Index">Prostorne jedinice (JLS)</a>
+                    <li class="breadcrumb-item"><a asp-controller="LocalGovernments" asp-action="Details" asp-route-id="@Model.LocalGovernmentAdministration.Id">@Model.LocalGovernmentAdministration.Name</a>
+                </ol>
+            </nav>
+        }
+        <div class="row">
+            <div class="col-md-12">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="LocalGovernmentAdministration.Id" />
+                    <p class="lead">
+                        Opći podaci
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="LocalGovernmentAdministration.Name" class="control-label">Naziv *</label>
+                                <input asp-for="LocalGovernmentAdministration.Name" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.Name" class="text-danger"></span>
+
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Opis</label>
+                                <textarea style="max-height:130px; min-height:39px;" asp-for="LocalGovernmentAdministration.Description" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label asp-for="LocalGovernmentAdministration.CodeNumber" class="control-label">Matični broj *</label>
+                                <input asp-for="LocalGovernmentAdministration.CodeNumber" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.CodeNumber" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Površina <small>(u km<sup>2</sup>)</small></label>
+                                <input asp-for="LocalGovernmentAdministration.SurfaceArea" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.SurfaceArea" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Tip naselja</label>
+                                @Html.DropDownListFor(x => x.LocalGovernmentAdministration.CommunityTypeID, new SelectList(Model.CommunityTypes, "Id", "Name"), htmlAttributes: new { @class = "form-control", id = "CommunityTypeID" })
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label class="control-label">Web stranica</label>
+                                <input asp-for="LocalGovernmentAdministration.WebSiteUrl" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.WebSiteUrl" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-3">
+                                <div class="custom-control custom-switch">
+                                    <input asp-for="LocalGovernmentAdministration.IsAdministrativeCity" class="custom-control-input" id="IsAdministrativeCity">
+                                    <label class="custom-control-label" for="IsAdministrativeCity">Status Grada </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+                    <p class="lead">
+                        Stanovništvo
+                    </p>
+                    <hr />
+                    <div class="edit-administration-form">
+                        <div class="form-row">
+                            <div class="form-group col-md-4">
+                                <label class="control-label">Stanovništvo 2001.</label>
+                                <input type="number" asp-for="LocalGovernmentAdministration.Population2001" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.Population2001" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="control-label">Stanovništvo 2011.</label>
+                                <input type="number" asp-for="LocalGovernmentAdministration.Population2011" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.Population2011" class="text-danger"></span>
+                            </div>
+                            <div class="form-group col-md-4">
+                                <label class="control-label">Stanovništvo 2021.</label>
+                                <input type="number" value="0" asp-for="LocalGovernmentAdministration.Population2021" class="form-control" />
+                                <span asp-validation-for="LocalGovernmentAdministration.Population2021" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <br />
+
+                    @if (isSigned)
+                    {
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-outline-success"><i class="fa fa-check"></i> Pohrani promjene</button>
+                        </div>
+                    }
+                </form>
+            </div>
+        </div>
+    </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_ValidationCommaPartial");}
+
+
+
+
+}

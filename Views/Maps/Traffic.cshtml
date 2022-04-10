@@ -1,0 +1,732 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.GIS.TrafficVM
+@{
+    ViewData["Title"] = "Culture";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var dateToday = DateTime.Now.ToShortDateString();
+    var plannedRoads = Model.PlannedRoad.features.OrderBy(x => String.IsNullOrWhiteSpace(x.Properties.Code)).ThenBy(y => y.Properties.Code);
+
+    var layersModel = Model.MapLayers.ToArray();
+}
+
+<partial name="_SettingsModal" />
+@await Html.PartialAsync("_InfoModalRoads")
+@await Html.PartialAsync("_InfoModalPlannedRoads")
+@await Html.PartialAsync("_InfoModalRailroad")
+@await Html.PartialAsync("_LayerModal", Model.MapLayers)
+
+<div class="container-fluid">
+    <div class="row" style="margin-left:1px; margin-top:5px;">
+        <div class="col-md-12">
+            <div class="edit-administration-form">
+                <div id="map" class="map"></div>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+    <br />
+    <div class="row" style="margin-left:1px;">
+        <div class="col-md-4">
+            <div class="edit-administration-form">
+                <p class="lead" style="font-size: 1.15em;">
+                    Razvrstane ceste
+                </p>
+                <hr />
+                <br />
+                <table class="table small" id="roadList" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Oznaka</th>
+                            <th align="center">Opis</th>
+                            <th align="center" style="display:none;">Kategorija</th>
+                            <th align="center">Duljina</th>
+                            <th align="center" style="display:none;">Duljina NN</th>
+                            <th align="center" style="display:none;">Koridor</th>
+                            <th align="center" style="display:none;">Širina ceste</th>
+                            <th align="center" style="display:none;">Napomena</th>
+                            <th align="center" style="display:none;">Odluka</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Road.features)
+                        {
+                            var style = item.geometry.Coordinates.Any() ? string.Empty : "table-danger";
+                            <tr class="hoverTable @style" onclick="zoomToFeature('@item.Properties.RoadCode', 'roads');">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.RoadCode)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.Description)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Category)
+                                </td>
+                                <td>
+                                    @string.Format("{0} km", item.Properties.DOFLenght)
+                                </td>
+                                <td style="display:none;">
+                                    @string.Format("{0} km", item.Properties.OfficialLenght)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Coridor)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Width)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Remark)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Document)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="edit-administration-form">
+                <p class="lead" style="font-size: 1.15em;">
+                    Željeznice
+                </p>
+                <hr />
+                <br />
+                <table class="table small" id="railList" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Oznaka</th>
+                            <th align="center" style="display:none;">Puni naziv</th>
+                            <th align="center">Opis</th>
+                            <th align="center" style="display:none;">Kategorija</th>
+                            <th align="center">Duljina</th>
+                            <th align="center" style="display:none;">Napomena</th>
+                            <th align="center" style="display:none;">Koridor</th>
+                            <th align="center" style="display:none;">Duljina u KZŽ</th>
+                            <th align="center" style="display:none;">Odluka</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.Railroad.features)
+                        {
+                            var style = item.geometry.Coordinates.Any() ? string.Empty : "table-danger";
+                            <tr class="hoverTable @style" onclick="zoomToFeature('@item.Properties.RailCode', 'railroad')">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.RailCode)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Description)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.ShortDescription)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Category)
+                                </td>
+                                <td>
+                                    @string.Format("{0} km", item.Properties.OfficialLenght)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Remark)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Coridor)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.CountyLenght)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Document)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="edit-administration-form">
+                <p class="lead" style="font-size: 1.15em;">
+                    Planirane ceste
+                </p>
+                <hr />
+                <br />
+                <table class="table small" id="plannedRoadList" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Oznaka</th>
+                            <th align="center">Opis</th>
+                            <th align="center">Planirana duljina</th>
+                            <th align="center" style="display:none;">Širina</th>
+                            <th align="center" style="display:none;">Koridor</th>
+                            <th align="center" style="display:none;">Izvor dokumenta</th>
+                            <th align="center" style="display:none;">Kartografski prikaz</th>
+                            <th align="center" style="display:none;">Napomena</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in plannedRoads)
+                        {
+                            var style = item.geometry.Coordinates.Any() ? string.Empty : "table-danger";
+                            <tr class="hoverTable @style" onclick="zoomToFeature('@item.Properties.Code', 'plannedroads')">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.Code)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Properties.Description)
+                                </td>
+                                <td>
+                                    @string.Format("{0} km", item.Properties.PlannedLenght)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Width)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Coridor)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.DocumentSource)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Map)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.Properties.Remark)
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_LayerSettingsScripts");}
+    @{await Html.RenderPartialAsync("_MapScriptsPartial");}
+
+<script type="text/javascript">
+    $('.modal-dialog').draggable({ handle: ".modal-header" });
+
+    let sortedRoads = @Html.Raw(Json.Serialize(Model.Road));
+    let plannedRoads = @Html.Raw(Json.Serialize(Model.PlannedRoad));
+    let railroads = @Html.Raw(Json.Serialize(Model.Railroad));
+    let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+
+    //#region GEOJSON OBJECTS
+    let geojsonObjectRoads = new ol.format.GeoJSON().readFeatures(sortedRoads);
+    let roadsSource = new ol.source.Vector({
+        features: geojsonObjectRoads
+    });
+
+    let geojsonObjectPlannedRoads = new ol.format.GeoJSON().readFeatures(plannedRoads);
+    let plannedRoadsSource = new ol.source.Vector({
+        features: geojsonObjectPlannedRoads
+    });
+
+    let geojsonObjectRailroads = new ol.format.GeoJSON().readFeatures(railroads);
+    let railroadsSource = new ol.source.Vector({
+        features: geojsonObjectRailroads
+    });
+    //#endregion GEOJSON OBJECTS
+
+    //#region VECTOR STYLES
+
+    function styleRoadsFunction(feature) {
+        if (feature.get("KATEGORIJA") == "LOKALNA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'orange',
+                    lineCap: 'square',
+                    width: 3
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else if (feature.get("KATEGORIJA") == "ŽUPANIJSKA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'green',
+                    lineCap: 'square',
+                    width: 4
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else if (feature.get("KATEGORIJA") == "DRŽAVNA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    lineCap: 'square',
+                    width: 5
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else if (feature.get("KATEGORIJA") == "AUTOCESTA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'magenta',
+                    lineCap: 'square',
+                    width: 6
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'gray',
+                    lineCap: 'square',
+                    width: 3
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 15 ? feature.get("KATEGORIJA") : ""
+                })
+            })]
+        }
+    };
+
+    function styleRailroadsFunction(feature) {
+        if (feature.get("KATEGORIJA") == "LOKALNA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'green',
+                    lineCap: 'square',
+                    lineDash: [.1, 5],
+                    width: 3
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else if (feature.get("KATEGORIJA") == "REGIONALNA") {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'darkgreen',
+                    lineCap: 'square',
+                    lineDash: [.1, 5],
+                    width: 4
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 14 ? feature.get("OZNAKA") : ""
+                })
+            })]
+        } else {
+            return [new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'gray',
+                    lineCap: 'square',
+                    width: 3
+                })
+            })]
+        }
+    };
+
+    function stylePlannedRoadFunction(feature) {
+        return [
+            new ol.style.Style({
+                stroke: new ol.style.Stroke({
+                    color: 'red',
+                    lineCap: 'square',
+                    lineDash: [.1, 5],
+                    width: 4
+                }),
+                text: new ol.style.Text({
+                    font: '12px Calibri,sans-serif',
+                    fill: new ol.style.Fill({ color: '#000' }),
+                    stroke: new ol.style.Stroke({
+                        color: '#fff', width: 2
+                    }),
+                    text: map.getView().getZoom() > 12 ? feature.get("OZNAKA") : ""
+                })
+            })
+        ]
+    };
+    //#endregion VECTOR STYLES
+
+    //#region MAP VECTOR LAYERS
+
+
+    let roadsLayer = new ol.layer.Vector({
+        className: "roads",
+        source: roadsSource,
+        zIndex: Infinity,
+        style: styleRoadsFunction
+    });
+    let plannedRoadsLayer = new ol.layer.Vector({
+        className: "plannedroads",
+        source: plannedRoadsSource,
+        zIndex: Infinity,
+        style: stylePlannedRoadFunction
+    });
+    let railroadsLayer = new ol.layer.Vector({
+        className: "railroad",
+        source: railroadsSource,
+        zIndex: Infinity,
+        style: styleRailroadsFunction
+    });
+    //#endregion MAP VECTOR LAYERS
+
+    //#region MAP CUSTOM BUTTONS
+    let buttonSettings = document.createElement('button');
+        buttonSettings.innerHTML = '<i class="fa fa-cogs"></i>';
+        buttonSettings.setAttribute("data-toggle", "tooltip");
+        buttonSettings.setAttribute("data-placement", "right");
+        buttonSettings.title = "Postavke karte";
+    let handleSettings = function (e) {
+        $('#settingsMap').modal('show');
+    };
+
+        buttonSettings.addEventListener('click', handleSettings, false);
+
+    let elementSettings = document.createElement('div');
+        elementSettings.className = 'properties-modal  ol-control';
+        elementSettings.appendChild(buttonSettings);
+
+    let settingsControl = new ol.control.Control({
+        element: elementSettings
+        });
+
+    let buttonLayers = document.createElement('button');
+        buttonLayers.innerHTML = '<i class="fa fa-layer-group"></i>';
+        buttonLayers.setAttribute("data-toggle", "tooltip");
+        buttonLayers.setAttribute("data-placement", "right");
+        buttonLayers.title = "Odabir podatkovnih slojeva";
+    let handleLayers= function (e) {
+        $('#layerMapModal').modal('show');
+        };
+
+        buttonLayers.addEventListener('click', handleLayers, false);
+
+    let elementLayers = document.createElement('div');
+        elementLayers.className = 'properties-modal-layers  ol-control';
+        elementLayers.appendChild(buttonLayers);
+
+    let layersControl = new ol.control.Control({
+        element: elementLayers
+    });
+
+    map.addControl(settingsControl);
+        map.addControl(layersControl);
+   //#endregion MAP CUSTOM BUTTONS
+
+
+
+
+    let roadsSlider = $("#sortedroad_slider").slider({
+        min: 0,
+        max: 100,
+        value: 100,
+        slide: function (event, e) {
+            roadsLayer.setOpacity(e.value / 100);
+        },
+        disabled: true
+    });
+    let plannedRoadsSlider = $("#plannedroad_slider").slider({
+        min: 0,
+        max: 100,
+        value: 100,
+        slide: function (event, e) {
+            plannedRoadsLayer.setOpacity(e.value / 100);
+        },
+        disabled: true
+    });
+    let railroadsSlider = $("#railroad_slider").slider({
+        min: 0,
+        max: 100,
+        value: 100,
+        slide: function (event, e) {
+            railroadsLayer.setOpacity(e.value / 100);
+        },
+        disabled: true
+    });
+    $('#sortedroad_id').on('change', function () {
+        let isChecked = $(this).is(':checked');
+        if (isChecked) {
+            map.addLayer(roadsLayer);
+            roadsLayer.setOpacity(1);
+            roadsSlider.slider({ value: 100, disabled: false, animate: true });
+        } else {
+            map.removeLayer(roadsLayer);
+            roadsSlider.slider({ value: 100, disabled: true, animate: true });
+        }
+    });
+    $('#plannedroad_id').on('change', function () {
+        let isChecked = $(this).is(':checked');
+        if (isChecked) {
+            map.addLayer(plannedRoadsLayer);
+            plannedRoadsLayer.setOpacity(1);
+            plannedRoadsSlider.slider({ value: 100, disabled: false, animate: true });
+        } else {
+            map.removeLayer(plannedRoadsLayer);
+            plannedRoadsSlider.slider({ value: 100, disabled: true, animate: true });
+        }
+    });
+    $('#railroad_id').on('change', function () {
+        let isChecked = $(this).is(':checked');
+        if (isChecked) {
+            map.addLayer(railroadsLayer);
+            railroadsLayer.setOpacity(1);
+            railroadsSlider.slider({ value: 100, disabled: false, animate: true });
+        } else {
+            map.removeLayer(railroadsLayer);
+            railroadsSlider.slider({ value: 100, disabled: true, animate: true });
+        }
+    });
+
+
+    //#region MAP EVENTS
+
+    map.on('click', InfoRoadsDataOnclick);
+    map.on('click', InfoPlannedRoadsDataOnclick);
+    map.on('click', InfoRailroadsDataOnclick);
+    //#endregion MAP EVENTS
+
+    function zoomToFeature(id, layerName) {
+        let features = null;
+        let mapLayers = map.getLayers().getArray();
+
+        let isLayerAvailable = false;
+
+        if (layerName == "roads") {
+            features = roadsSource.getFeatures();
+            for (const layer of mapLayers) {
+                if (layer.className_ == "roads") {
+                    isLayerAvailable = true;
+                }
+            }
+
+        } else if (layerName == "plannedroads") {
+            features = plannedRoadsSource.getFeatures();
+            for (const layer of mapLayers) {
+                if (layer.className_ == "plannedroads") {
+                    isLayerAvailable = true;
+                }
+            }
+        } else {
+            for (const layer of mapLayers) {
+                if (layer.className_ == "railroad") {
+                    isLayerAvailable = true;
+                }
+            }
+            features = railroadsSource.getFeatures();
+        }
+
+
+        if (isLayerAvailable) {
+            let selectedFeature;
+
+            for (let i = 0, ii = features.length; i < ii; i++) {
+                if (features[i].get("OZNAKA") === id) {
+                    selectedFeature = features[i];
+                    break;
+                }
+            }
+
+            let geometry = selectedFeature.getGeometry();
+            let extentOfFeature = geometry.getExtent();
+
+            if (extentOfFeature[0] != Infinity) {
+                $('html, body').animate({ scrollTop: 0 }, 'slow', function () { });
+                selectedFeature.setStyle(selectedStyle);
+                setTimeout(() => {
+                    selectedFeature.setStyle(null);
+                }, 1300)
+                map.getView().fit(extentOfFeature);
+            }
+        }
+        }
+
+     //#region INFO MODAL FUNCTIONS
+
+    function InfoRoadsDataOnclick(e) {
+        let feature = map.forEachFeatureAtPixel(e.pixel, function (feature)
+        {
+            return feature;
+        },
+            {
+                layerFilter: function (layer) {
+                    return layer === roadsLayer;
+                },
+            }
+
+        );
+        if (feature != undefined) {
+            let values = feature.values_;
+            $('#sortedRoadModal').modal('show');
+
+            $("#titleRoad").html(values.OZNAKA);
+            $("#codeRoad").html(values.OZNAKA);
+            $("#descriptionRoad").html(values.OPIS);
+            $("#roadCategory").html(values.KATEGORIJA);
+            $("#officialLength").html(values.DULJ_NN + " km");
+            $("#dofLength").html(values.DULJ_DOF + " km");
+            $("#roadCoridor").html(values.KORIDOR);
+            $("#roadWidth").html(values.SIRINA);
+            $("#roadDocument").html(values.ODLUKA);
+            $("#roadRemark").html(values.NAPOMENA);
+            $("#description").show();
+        } else {
+            $("#description").hide();
+        }
+        }
+    function InfoPlannedRoadsDataOnclick(e) {
+            let feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                return feature;
+            },
+                {
+                    layerFilter: function (layer) {
+                        return layer === plannedRoadsLayer;
+                    },
+                }
+            );
+            if (feature != undefined) {
+                let values = feature.values_;
+                $('#plannedRoadModal').modal('show');
+
+                $("#titlePlannedRoad").html(values.OZNAKA);
+                $("#codePlannedRoad").html(values.OZNAKA);
+                $("#descriptionPlannedRoad").html(values.OPIS);
+                $("#plannedLength").html(values.DULJ_PLAN + " km");
+                $("#plannedRoadWidth").html(values.SIRINA);
+                $("#plannedRoadCoridor").html(values.KORIDOR);
+                $("#sourcePlannedRoad").html(values.IZVOR_PLAN);
+                $("#plannedRoadMap").html(values.KARTA);
+                $("#plannedRoadRemark").html(values.NAPOMENA);
+            }
+        };
+
+        function InfoRailroadsDataOnclick(e) {
+            let feature = map.forEachFeatureAtPixel(e.pixel, function (feature) {
+                return feature;
+            },
+                {
+                    layerFilter: function (layer) {
+                        return layer === railroadsLayer;
+                    },
+                }
+            );
+            if (feature != undefined) {
+                let values = feature.values_;
+                $('#railroadModal').modal('show');
+
+                $("#titleRailroad").html(values.OZNAKA);
+                $("#codeRailroad").html(values.OZNAKA);
+                $("#descriptionRailroad").html(values.PUNI_NAZIV);
+                $("#descriptionShort").html(values.SKR_NAZIV);
+                $("#railroadCategory").html(values.KATEGORIJA);
+                $("#officialLength").html(values.DULJ_NN + " km");
+                $("#countyLength").html(values.DULJ_KZZ + " km");
+                $("#railroadCoridor").html(values.KORIDOR);
+                $("#railroadRemark").html(values.NAPOMENA);
+                $("#railroadDocument").html(values.ODLUKA);
+            }
+        };
+        //#endregion INFO MODAL FUNCTIONS
+     $('#roadList, #railList').DataTable({
+        dom: 'Bfrtip',
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+        },
+        bLengthChange: false,
+        buttons: [{
+            text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+            className: 'btn btn-outline-success custom-excel-btn',
+            extend: 'excelHtml5',
+            autoFilter: true,
+            sheetName: 'Exported data',
+            title: 'Tablica_' + dateToday
+        }]
+    });
+
+    $('#plannedRoadList').DataTable({
+        dom: 'Bfrtip',
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+        },
+        bLengthChange: false,
+        order: [[1, "desc"]],
+        buttons: [{
+            text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+            className: 'btn btn-outline-success custom-excel-btn',
+            extend: 'excelHtml5',
+            autoFilter: true,
+            sheetName: 'Exported data',
+            title: 'Planirane_ceste_' + dateToday
+        }]
+    });
+    $('[data-toggle="tooltip"]').tooltip();
+    let highlight;
+    map.on("pointermove", function (e) {
+        if (e.dragging) {
+            return;
+        }
+        let pixel = this.getEventPixel(e.originalEvent);
+        var feature = this.forEachFeatureAtPixel(
+            pixel,
+            function (feature) {
+                return feature;
+            }
+        );
+        if (feature !== highlight) {
+            if (highlight) {
+                highlightLayer.getSource().removeFeature(highlight);
+            }
+            if (feature) {
+                highlightLayer.getSource().addFeature(feature);
+            }
+            highlight = feature;
+        }
+        this.getTargetElement().style.cursor = feature
+            ? "pointer"
+            : "";
+    });
+</script>
+
+}

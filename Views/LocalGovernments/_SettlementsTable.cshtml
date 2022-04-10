@@ -1,0 +1,33 @@
+﻿
+@using ZAVOD_KZZ.Helpers.Translations
+@model IEnumerable<ZAVOD_KZZ.Core.Models.LocalGovernmentSettlement>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+<table class="table table-striped table-bordered small" id="settlements" style="width:100%">
+    <thead>
+        <tr>
+            <th>@TranslationsLabels.Name</th>
+            <th>@TranslationsLabels.CodeNumber</th>
+            <th>JLS</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CodeNumber)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LocalGovernmentAdministrations.Name)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,14 @@
+﻿@using ZAVOD_KZZ
+@using ZAVOD_KZZ.Core.Models
+@using ZAVOD_KZZ.Helpers.Enums
+@using static ZAVOD_KZZ.Helpers.SpatialPlanDocumentExtensions.SpatialPlanDocumentHelper
+@using static ZAVOD_KZZ.Helpers.OfficialDocumentsZaraExtension.OfficialDocumentZaraHelper
+@using static ZAVOD_KZZ.Helpers.StatisticsExtensions.TotalPercentage
+@using static ZAVOD_KZZ.Helpers.Extensions.RoadExtension
+@using static ZAVOD_KZZ.Helpers.Extensions.RailroadExtension
+@using static ZAVOD_KZZ.Helpers.AppSettings.AppConfig
+
+@using Microsoft.AspNetCore.Identity
+@inject SignInManager<IdentityUser> SignInManager
+
+@addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers

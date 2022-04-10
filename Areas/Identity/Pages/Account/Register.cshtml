@@ -1,0 +1,45 @@
+﻿@page
+@model RegisterModel
+@{
+    Layout = "~/Views/Shared/_LayoutAuth.cshtml";
+}
+
+    <div class="col-4 mx-auto" style="margin-top:10%;">
+        <p class="lead text-center" style="font-size:1.6em;">
+            Registracija admina
+        </p>
+        <hr />
+        <form asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div class="edit-administration-form">
+                <div class="form-group">
+                    <label asp-for="Input.FirstName"></label>
+                    <input type="text" asp-for="Input.FirstName" class="form-control" />
+                    <span asp-validation-for="Input.FirstName" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" class="form-control" />
+                    <span asp-validation-for="Input.Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" class="form-control" />
+                    <span asp-validation-for="Input.Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Input.ConfirmPassword"></label>
+                    <input asp-for="Input.ConfirmPassword" class="form-control" />
+                    <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+                </div>
+                <button type="submit" class="btn btn-outline-success"><i class="fas fa-user-check"></i> Registracija admina</button>
+            </div>
+        </form>
+        <br />
+        <div class="form-group text-center">
+            <a class="btn btn-outline-success" asp-controller="Home" asp-action="Index"><span class="fas fa-arrow-left mr-1"></span> Povratak na aplikaciju</a>
+        </div>
+    </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -1,0 +1,403 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.RoadsLocalGovernmentDetailsVM
+
+@{
+    ViewData["Title"] = "Details";
+    var isSigned = SignInManager.IsSignedIn(User);
+    var containerClass = string.Empty;
+    if (isSigned)
+    {
+        containerClass = "container-fluid";
+        Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+    }
+    else
+    {
+
+        containerClass = "container";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }
+
+    var administration = string.Empty;
+    var dateToday = DateTime.Now.ToShortDateString();
+
+    if (Model.LocalGovernmentAdministration.IsAdministrativeCity == true)
+    {
+        administration = "Grada";
+    }
+    else
+    {
+        administration = "Općina";
+    }
+
+    var stackedData = Model.RoadsForStackedChart;
+
+    var sumRoadValue = Model.RoadsLocalGovernment.Sum(x => x.RoadLength).ToString();
+}
+    <div class="@containerClass">
+        @if (isSigned)
+        {
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+                    <li class="breadcrumb-item" aria-current="page">Infrastruktura</li>
+                    <li class="breadcrumb-item"><a asp-controller="Roads" asp-action="Index">Cestovna infrastruktura</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+                </ol>
+            </nav>
+        }
+        else
+        {
+            <br />
+
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Početna</a>
+                    <li class="breadcrumb-item"><a asp-controller="Roads" asp-action="Index">Cestovna infrastruktura</a>
+                    <li class="breadcrumb-item active" aria-current="page">@Model.LocalGovernmentAdministration.Name</li>
+                </ol>
+            </nav>
+        }
+
+
+        <p class="lead" style="font-size: 1.6em;">
+            Ceste na prostoru  @administration  @Model.LocalGovernmentAdministration.Name
+        </p>
+        <hr />
+        <div class="row ">
+            <div class="col-md-8">
+                <div class="edit-administration-form">
+                    <div class="card">
+                        <h6 class="card-header">Detalji o cestovnoj infrastrukturi </h6>
+                        <div class="card-body">
+                            <div class="accordion" id="accordionExample">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData" aria-expanded="true" aria-controls="infoData">
+                                                Ceste po jedinici lokalne samouprave
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="infoData" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                        <div class="card-body">
+                                            @if (Model.RoadsLocalGovernment.Any())
+                                            {
+                                                <table class="table table-sm table-striped table-bordered small display nowrap"
+                                                       width="100%" id="roadsLocalGovernmentTable">
+                                                    <thead>
+                                                        <tr>
+                                                            @if (isSigned)
+                                                            {
+                                                                <th>Akcije</th>
+
+                                                            }
+                                                            <th>
+                                                                Kategorija
+                                                            </th>
+                                                            <th>
+                                                                Oznaka
+                                                            </th>
+                                                            <th class="text-center">
+                                                                Opis
+                                                            </th>
+                                                            <th>
+                                                                Duljina u JLS
+                                                            </th>
+                                                            <th>
+                                                                Ukupna duljina
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var item in Model.RoadsLocalGovernment)
+                                                        {
+                                                        <tr>
+                                                            @if (isSigned)
+                                                            {
+                                                                <td>
+                                                                    <a asp-action="Edit" class="btn btn-outline-success btn-sm" data-toggle="tooltip" data-placement="right" title="Uredi" asp-route-id="@item.Id"><i class="fas fa-edit"></i></a>
+                                                                    <button class="btn btn-outline-danger btn-sm js-delete" data-toggle="tooltip" data-placement="right" title="Izbriši" data-road-id="@item.Id"><i class="far fa-trash-alt"></i></button>
+                                                                </td>
+                                                            }
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Road.RoadCategory.Name)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Road.Code)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Road.Description)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.RoadLength)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Road.SpatialNewslength)
+                                                            </td>
+                                                        </tr>
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion" id="accordionExample1">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne1">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData1" aria-expanded="true" aria-controls="infoData1">
+                                                Cestovna gustoća u jedinici lokalne samouprave
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="infoData1" class="collapse" aria-labelledby="headingOne1" data-parent="#accordionExample1">
+                                        <div class="card-body">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Nerazvrstane ceste:
+                                                    <span class="details-population">@Model.UnSortedRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Planirane ceste:
+                                                    <span class="details-population">@Model.PlannedRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Lokalne ceste:
+                                                    <span class="details-population">@Model.LocalRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Županijske ceste:
+                                                    <span class="details-population">@Model.CountyRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Državne ceste:
+                                                    <span class="details-population">@Model.StateRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Brze ceste:
+                                                    <span class="details-population">@Model.SpeedRoadDensity</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    Autoceste:
+                                                    <span class="details-population">@Model.SpeedRoadDensity</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="accordion" id="accordionExample2">
+                                <div class="card">
+                                    <div class="card-header" id="headingOne2">
+                                        <h2 class="mb-0">
+                                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#infoData2" aria-expanded="true" aria-controls="infoData2">
+                                                Udio pojedinih cesta po jedinicama lokalne samouprave
+                                            </button>
+                                        </h2>
+                                    </div>
+                                    <div id="infoData2" class="collapse" aria-labelledby="headingOne2" data-parent="#accordionExample2">
+                                        <div class="card-body">
+                                            <ul class="list-group list-group-flush">
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    <span style="font-weight:600;">Kategorija</span>
+                                                    <span style="font-weight:600;">Duljina</span>
+                                                    <span style="font-weight:600;">Postotak</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between  list-group-flush">
+                                                    <span>Autocesta: </span>
+                                                    <span class="details-population align-items-center" style="margin-right: 3px;"> @Model.HighwayRoadTotal.Keys.FirstOrDefault()</span>
+                                                    <span class="details-population align-items-right">@Model.HighwayRoadTotal.Values.FirstOrDefault()</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between list-group-flush">
+                                                    <span>Državna: </span>
+                                                    <span class="details-population align-items-center" style="margin-left: 20px;"> @Model.StateRoadTotal.Keys.FirstOrDefault()</span>
+                                                    <span class="details-population align-items-right"> @Model.StateRoadTotal.Values.FirstOrDefault()</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between  list-group-flush">
+                                                    <span>Županijska: </span>
+                                                    <span class="details-population" style="margin-right: 3px;">@Model.CountyRoadTotal.Keys.FirstOrDefault()</span>
+                                                    <span class="details-population">@Model.CountyRoadTotal.Values.FirstOrDefault()</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between  list-group-flush">
+                                                    <span>Lokalna: </span>
+                                                    <span class="details-population" style="margin-left: 15px;"> @Model.LocalRoadTotal.Keys.FirstOrDefault()</span>
+                                                    <span class="details-population">@Model.LocalRoadTotal.Values.FirstOrDefault()</span>
+                                                </li>
+                                                <li class="list-group-item d-flex justify-content-between align-items-center list-group-flush">
+                                                    <span style="font-weight:600;">Sveukupno: </span>
+                                                    <span style="font-weight:600; margin-right:65px;">@string.Format("{0} km", sumRoadValue)</span>
+                                                    <span style="font-weight:600;" class="details-population"></span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="edit-administration-form">
+                    <canvas id="myChart" style="width:600px; height:800px"></canvas>
+                </div>
+            </div>
+
+        </div>
+        <br />
+        <div>
+            <a class="btn btn-outline-success" asp-controller="Roads" asp-action="Index" role="button"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+        </div>
+        <br />
+        <br />
+    </div>
+<style>
+    .counter-item-settlement {
+        font-size: small;
+        font-weight: 700;
+    }
+
+    .badge-item-settlement {
+        float: right;
+        margin-top: 15px;
+    }
+</style>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+        let graphArrayDataValuesSorted = @Html.Raw(Json.Serialize(stackedData));
+        let dateToday = @Html.Raw(Json.Serialize(dateToday));
+        $('[data-toggle="tooltip"]').tooltip();
+
+        let roadsTable = $('#roadsLocalGovernmentTable').DataTable({
+                dom: 'Bfrtip',
+                scrollX: true,
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+            buttons: [{
+                text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+                className: 'btn btn-outline-success',
+                extend: 'excelHtml5',
+                autoFilter: true,
+                sheetName: 'Exported data',
+                title: 'Tablica_' + dateToday
+            }],
+                bLengthChange: false,
+          });
+
+
+        let ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: ["Javne razvrstane ceste"],
+                        datasets: graphArrayDataValuesSorted,
+                    },
+                    options: {
+                    responsive: true,
+                    legend: { position: 'top' },
+                    title: { display: true, text: '' },
+                     scales: {
+                          xAxes: [{
+                            stacked: true,
+                            gridLines: {
+                              display: false,
+                            }
+                          }],
+                          yAxes: [{
+                            stacked: true,
+                            ticks: {
+                              beginAtZero: true,
+                            },
+                            type: 'linear',
+                          }]
+                    },
+                    legend: {
+                        display: true,
+                        onHover: function (e) {
+                            e.target.style.cursor = 'pointer';
+                        }
+                    },
+                    tooltips: {
+                        enabled: true,
+                        callbacks: {
+                            label: function(tooltipItem, data) {
+                                return `${data.labels[tooltipItem.index]}:  ${data.datasets[tooltipItem.datasetIndex].data[tooltipItem.index]} km`;
+                            }
+                        }
+                    },
+                    hover: {
+                        onHover: function (e) {
+                            let point = this.getElementAtEvent(e);
+                            if (point.length) e.target.style.cursor = 'pointer';
+                            else e.target.style.cursor = 'default';
+                        }
+                    },
+                    plugins: {
+                        datalabels: {
+                            color: '#fff',
+                            anchor: 'end',
+                            align: 'start',
+                            offset: -10,
+                            borderWidth: 2,
+                            borderColor: '#fff',
+                            borderRadius: 25,
+                            backgroundColor: (con) => {
+                                return con.dataset.backgroundColor;
+                            },
+                            font: {
+                                weight: 'bold',
+                                size: '10'
+                            },
+                            formatter: (value) => {
+                                let formatPerc = `${value} km`;
+                                return formatPerc;
+
+                            }
+                        }
+                    }
+                },
+
+});
+
+        $("#roadsLocalGovernmentTable").on("click", ".js-delete", function () {
+                let button = $(this);
+                bootbox.confirm({
+                    centerVertical: true,
+                    message: "Jeste li sigurni da želite izbrisati odabranu cestu?",
+                    buttons: {
+                        confirm: {
+                            label: '<i class="far fa-trash-alt"></i>  Izbriši',
+                            className: 'btn-danger'
+                        },
+                        cancel: {
+                            label: '<i class="fa fa-times"></i> Prekini',
+                            className: 'btn-success'
+                        }
+                    },
+                    callback: function (result) {
+                        if (result) {
+                            let url = "/RoadsLocalGovernment/DeleteRoadLocalGovernment/";
+                            let id = button.attr("data-road-id");
+                            $.ajax({
+                                url: `${url}${id}`,
+                                method: "DELETE",
+                                success: function () {
+                                    roadsTable.row(button.parents("tr")).remove().draw();
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+
+
+    </script>
+
+}
+

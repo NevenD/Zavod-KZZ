@@ -1,0 +1,60 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.Models.SpatialPlanDocument>
+
+<table class="table small" id="spatialPlansAllEditList" style="width:100%">
+    <thead>
+        <tr>
+            <th align="center">Akcije</th>
+            <th align="center">Općina/Grad</th>
+            <th align="center">Vrsta plana</th>
+            <th align="center">Naziv plana</th>
+            <th align="center">ISPU</th>
+            <th align="center">Datum donošenja plana</th>
+            <th align="center">Glasnik</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+
+            var className = GetPlanStatusClassStyle(item.SpatialPlanStatus.Name);
+            var isArchived = item.DateArchived != null;
+            var warningClass = isArchived ? "table-warning" : "";
+
+            <tr class="@warningClass">
+                <td class="@className">
+                    <button class="btn btn-outline-primary btn-sm js-details-dashboard" data-toggle="tooltip" data-placement="top" title="Detaljan pregled plana" data-spatial-plan-details="@item.Id"><i class="fas fa-info"></i></button>
+                    <a class="btn btn-outline-success btn-sm" asp-controller="SpatialPlanDocuments" asp-action="Edit" role="button" asp-route-id="@item.Id" data-toggle="tooltip" data-placement="top" title="Uredi"><i class="far fa-edit"></i></a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LocalGovernmentAdministration.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.SpatialPlanLevel.ShortName)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.IspuName)
+                </td>
+                
+                @if (item.SpatialPlanEnactmentDate.HasValue)
+                {
+                    <td>
+                        @item.SpatialPlanEnactmentDate.Value.ToShortDateString()
+                    </td>
+                }
+                else
+                {
+                    <td>
+                        -
+                    </td>
+                }
+                <td>
+                    @string.Format("{0} {1}", item.OfficalSpatialNews.Name, item.OfficialSpatialNewsNumber)
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

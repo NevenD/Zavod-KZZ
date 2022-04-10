@@ -1,0 +1,59 @@
+﻿@model IEnumerable<ZAVOD_KZZ.Core.ViewModels.Population.NaturalChangeByYearVM>
+@*
+    For more information on enabling MVC for empty projects, visit http://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+
+<table class="table table-striped table-bordered small" id="naturalChangePopulationTable" style="width:100%">
+    <thead>
+        <tr>
+            <th rowspan="2" class="text-center">Godina</th>
+            <th colspan="3" class="text-center">Rođeni</th>
+            <th colspan="3" class="text-center">Umrli</th>
+            <th rowspan="2" class="text-center">Prirodni prirast</th>
+            <th rowspan="2" class="text-center">Vitalni indeks</th>
+        </tr>
+        <tr>
+            <th>Živorođeni</th>
+            <th>Mrtvorođeni</th>
+            <th>Ukupno</th>
+            <th>Umrli</th>
+            <th>Umrla dojenčad</th>
+            <th>Ukupno</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Year)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LiveBirths)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DeathBirths)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalBirths)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Death)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InfantDeath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.TotalDeath)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.NaturalChange)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VitalIndex)
+            </td>
+        </tr>
+        }
+    </tbody>
+</table>

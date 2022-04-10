@@ -1,0 +1,278 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.GIS.CultureVM
+@{
+    ViewData["Title"] = "Culture";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var dateToday = DateTime.Now.ToShortDateString();
+}
+
+
+<partial name="_SettingsModal" />
+@await Html.PartialAsync("_InfoModalCulture", dateToday)
+
+<div class="container-fluid">
+    <div class="row" style="margin-left:1px; margin-top:5px;">
+        <div class="col-md-12">
+            <div class="edit-administration-form">
+                <div id="map" class="map"></div>
+            </div>
+        </div>
+        <br />
+        <br />
+    </div>
+    <br />
+    <div class="row" style="margin-left:1px;">
+        <div class="col-md-12">
+            <div class="edit-administration-form">
+                <br />
+                <p class="noPolygonStyle text-muted"><span style="margin-left: 7px;"> Ne postoji poligon kulturnog dobra</span></p>
+                <table class="table small" id="cultureList" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th align="center">Naziv</th>
+                            <th align="center">JLS</th>
+                            <th align="center" style="display:none;">Mjesto</th>
+                            <th align="center">Vrsta kulture</th>
+                            <th align="center" style="display:none;">Starost dobra</th>
+                            <th align="center">Pravni status</th>
+                            <th align="center">Oznaka</th>
+                            <th align="center" style="display:none;">Unesco</th>
+                            <th align="center" style="display:none;">Starost kulturnog dobra</th>
+                            <th align="center">Klasifikacija</th>
+                            <th align="center" style="display:none;">Površina</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.CultureGeoJSON.features)
+                        {
+                            var style = item.geometry.coordinates.Any() ? string.Empty : "table-danger";
+                            <tr class="hoverTable @style" onclick="zoomToFeature(@item.properties.Id)">
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.Naziv)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.JLS)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.properties.Mjesto)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.VrstaKulture)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.properties.Vrijeme)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.PravniStatus)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.Oznaka)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.properties.UNESCO)
+                                </td>
+                                <td style="display:none;">
+                                    @Html.DisplayFor(modelItem => item.properties.Vrijeme)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.properties.Klasifikacija)
+                                </td>
+                                <td style="display:none;">
+                                    @string.Format("{0} m2", Math.Round(item.properties.Area, 2))
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <br />
+    <br />
+</div>
+
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_LayerSettingsScripts");}
+    @{await Html.RenderPartialAsync("_MapScriptsPartial");}
+
+    <script type="text/javascript">
+
+    $('.modal-dialog').draggable({
+        handle: ".modal-header"
+    });
+
+    let modelGeojson = @Html.Raw(Json.Serialize(Model.CultureGeoJSON));
+    let dateToday = @Html.Raw(Json.Serialize(dateToday));
+
+
+    let geojsonObject = new ol.format.GeoJSON().readFeatures(modelGeojson);
+
+    let cultureSource = new ol.source.Vector({
+        features: geojsonObject
+    });
+    let cultureLayer = new ol.layer.Vector({
+        source: cultureSource,
+        zIndex: Infinity
+    });
+
+
+    map.addLayer(cultureLayer);
+
+    let button = document.createElement('button');
+    button.innerHTML = '<i class="fa fa-cogs"></i>';
+        button.setAttribute("data-toggle", "tooltip");
+        button.setAttribute("data-placement", "right");
+        button.title = "Postavke karte";
+    let handleSettings = function (e) {
+        $('#settingsMap').modal('show');
+    };
+
+        button.addEventListener('click', handleSettings, false);
+
+    let element = document.createElement('div');
+    element.className = 'properties-modal  ol-control';
+    element.appendChild(button);
+
+    let settingsControl = new ol.control.Control({
+        element: element
+    });
+    map.addControl(settingsControl);
+
+
+
+    let extent = cultureSource.getExtent();
+    // if extent is unknown
+    if (extent[0] != Infinity) {
+        // zoom to layer
+        map.getView().fit(extent, { duration: 1500 });
+    }
+
+
+    map.on("pointermove", function (e) {
+        if (e.dragging) {
+            return;
+        }
+        let pixel = this.getEventPixel(e.originalEvent);
+        var feature = this.forEachFeatureAtPixel(
+            pixel,
+            function (feature) {
+                return feature;
+            }
+        );
+        if (feature !== highlight) {
+            if (highlight) {
+                highlightLayer.getSource().removeFeature(highlight);
+            }
+            if (feature) {
+                highlightLayer.getSource().addFeature(feature);
+            }
+            highlight = feature;
+        }
+        this.getTargetElement().style.cursor = feature
+            ? "pointer"
+            : "";
+    });
+    map.on('click', InfoDataOnclick);
+
+
+    function zoomToFeature(id) {
+        let features = cultureSource.getFeatures();
+        let selectedFeature;
+
+        for (let i = 0, ii = features.length; i < ii; i++) {
+            if (features[i].get("OBJECTID") === id) {
+                selectedFeature = features[i];
+                break;
+            }
+        }
+
+        let geometry = selectedFeature.getGeometry();
+        let extentOfFeature = geometry.getExtent();
+
+        if (extentOfFeature[0] != Infinity) {
+            $('html, body').animate({ scrollTop: 0 }, 'slow', function () {});
+            selectedFeature.setStyle(selectedStyle);
+            setTimeout(() => {
+                selectedFeature.setStyle(defaultStyle);
+            },700)
+            map.getView().fit(extentOfFeature);
+        }
+    }
+     $('[data-toggle="tooltip"]').tooltip();
+
+    function InfoDataOnclick(e) {
+        let source = cultureLayer.getSource();
+        var features = source.getFeaturesAtCoordinate(e.coordinate);
+
+        if (features.length > 0) {
+            let data = features[0];
+            $('#myModal').modal('show')
+            $("#titleCulture").html(data.get('naziv'));
+            $("#nameCulture").html(data.get('naziv'));
+            $("#codeCulture").html(data.get('oznaka'));
+            $("#legalCulture").html(data.get('pravni_sta'));
+            $("#classificationCulture").html(data.get('klasfikaci'));
+            $("#categoryCulture").html(data.get('vrsta_kult'));
+            $("#ageCulture").html(data.get('vrijeme'));
+
+            $("#unescoCulture").html(data.get('UNESCO'));
+            $("#jlsCulture").html(data.get('JLS'));
+            $("#placeCulture").html(data.get('mjesto'));
+            $("#adressCulture").html(data.get('adresa'));
+
+            let dataArea = parseFloat(data.get('Shape_Area')).toFixed(2);
+            $("#areaCulture").html(dataArea + " m<sup>2</sup>");
+
+            $("#defaultText").hide();
+            $("#description").show();
+        } else {
+            $("#defaultText").show();
+            $("#description").hide();
+        }
+        }
+
+
+    $('#cultureList').DataTable({
+        dom: 'Bfrtip',
+        language: {
+            url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+        },
+        bLengthChange: false,
+        buttons: [{
+            text: '<i class="far fa-file-excel"></i> Preuzmi u excelu',
+            className: 'btn btn-outline-success custom-excel-btn',
+            extend: 'excelHtml5',
+            autoFilter: true,
+            sheetName: 'Exported data',
+            title: 'Tablica_' + dateToday
+        }]
+    });
+        let highlight;
+        map.on("pointermove", function (e) {
+            if (e.dragging) {
+                return;
+            }
+            let pixel = this.getEventPixel(e.originalEvent);
+            var feature = this.forEachFeatureAtPixel(
+                pixel,
+                function (feature) {
+                    return feature;
+                }
+            );
+            if (feature !== highlight) {
+                if (highlight) {
+                    highlightLayer.getSource().removeFeature(highlight);
+                }
+                if (feature) {
+                    highlightLayer.getSource().addFeature(feature);
+                }
+                highlight = feature;
+            }
+            this.getTargetElement().style.cursor = feature
+                ? "pointer"
+                : "";
+        });
+    </script>
+
+}

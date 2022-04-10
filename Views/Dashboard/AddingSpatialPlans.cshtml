@@ -1,0 +1,132 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.DashboardSpatialPlansTableVM
+@{
+    ViewData["Title"] = "AddingSpatialPlans";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+    var lastAdded = Model.SpatialPlanDocuments.OrderByDescending(x => x.Id).FirstOrDefault();
+    var statusClass = lastAdded != null ? lastAdded.SpatialPlanStatus.Name : string.Empty;
+    var classNameStatus = GetPlanStatusClassStyle(statusClass);
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a asp-controller="Dashboard" asp-action="Index">Upravljačka ploča</a>
+        <li class="breadcrumb-item active" aria-current="page">Dodavanje i uređivanje planova</li>
+    </ol>
+</nav>
+<br />
+<div class="row">
+    <div class="col-md-3">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Dodavanje novog plana
+            </p>
+            <hr />
+            <p style="font-size: 0.95rem;font-weight: 200;">Osim dodavanja osnovnih informacija o Planu, omogućeno je pohranjivanje i popratne dokumentacije u .pdf formatu.</p>
+            <a asp-controller="SpatialPlanDocuments" asp-action="Create" class="btn btn-outline-secondary btn-sm btn-block"><i class="fas fa-book-open"></i> Dodaj novi Plan</a>
+        </div>
+    </div>
+    <div class="col-md-4 offset-md-5">
+        <div class="edit-administration-form">
+            <p class="lead">
+                Zadnje unesen plan
+            </p>
+            <hr />
+            <div class="media">
+                <div class="media-body">
+                    <h6 class="mt-0">Naziv plana: @lastAdded?.Name</h6>
+                    <p class="mb-0 @classNameStatus"><span style="margin-left: 7px;">@lastAdded?.SpatialPlanStatus.Name</span></p>
+                    <p class="mb-0">Općina/Grad: @lastAdded?.LocalGovernmentAdministration?.Name</p>
+                    <p class="mb-0">ISPU: @lastAdded?.IspuName </p>
+                    <p class="mb-0">Sl.Glasnik: @string.Format("{0}, {1}", lastAdded?.OfficalSpatialNews?.Name, lastAdded?.OfficialSpatialNewsNumber)</p>
+                    <p class="mb-0">Datum donošenja: @(lastAdded != null && lastAdded.SpatialPlanAnnouncementDevelopDate.HasValue ? lastAdded?.SpatialPlanAnnouncementDevelopDate.Value.ToShortDateString() : string.Empty )</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<div class="row">
+    <div class="col-md-12">
+        <div class="edit-administration-form">
+            <div class="accordion" id="allPlansEdit">
+                <div class="card">
+                    <div class="card-header" id="editPlans">
+                        <h2 class="mb-0">
+                            <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#allPlansListEdit" aria-expanded="true" aria-controls="allPlansListEdit">
+                                <i class="fa fa-table" aria-hidden="true"></i> Prikaz svih planova
+                            </button>
+                        </h2>
+                    </div>
+                    <div id="allPlansListEdit" class="collapse show" aria-labelledby="editPlans" data-parent="#allPlansEdit">
+                        <div class="card-body">
+                            <div style="display: flex;align-items: center;">
+                                <p class="lead spatial-status-valid">
+                                    <span style="margin-left: 7px;">Prostorni planovi na snazi</span>
+                                </p>
+                                <p class="lead spatial-status-inprogress" style="margin-left: 20px;">
+                                    <span style="margin-left: 7px;">Prostorni planovi u izradi</span>
+                                </p>
+                                <p class="lead spatial-status-invalid" style="margin-left: 20px;">
+                                    <span style="margin-left: 7px;">Prostorni planovi van snage</span>
+                                </p>
+                                <p class="lead spatial-status-archived" style="margin-left: 20px;">
+                                    <span style="margin-left: 7px;">Arhivirani planovi</span>
+                                </p>
+                            </div>
+                            @await Html.PartialAsync("_SpatialPlansEditList", model: Model.SpatialPlanDocuments)
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    th, td {
+        white-space: nowrap;
+    }
+
+    th {
+        text-align: center;
+    }
+</style>
+@section Scripts{
+    @{await Html.RenderPartialAsync("_DatatablesScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    <script>
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            $('#spatialPlansAllEditList').DataTable({
+                language: {
+                    url: "https://cdn.datatables.net/plug-ins/9dcbecd42ad/i18n/Croatian.json"
+                },
+                bLengthChange: false,
+            });
+
+
+            $(".js-details-dashboard").click(function () {
+                let url = "/SpatialPlanDocuments/Details/";
+                let id = $(this).attr("data-spatial-plan-details");
+                $.ajax({
+                    type: "GET",
+                    url: `${url}${id}`,
+                    success: function (data) {
+                        bootbox.dialog({
+                            message: data,
+                            scrollable: true,
+                            size: 'large',
+                            title: "Pregled detalja plana",
+                            buttons: {
+                                cancel: {
+                                    label: '<i class="fa fa-check"></i> Završi',
+                                    className: 'btn-success'
+                                }
+                            }
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+}

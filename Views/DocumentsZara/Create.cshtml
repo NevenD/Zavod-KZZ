@@ -1,0 +1,394 @@
+﻿@model ZAVOD_KZZ.Core.ViewModels.OfficialZaraDocumentsVM
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+
+}
+<div class="container">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a asp-controller="DashBoard" asp-action="Index">Upravljačka ploča</a>
+            <li class="breadcrumb-item"><a asp-controller="DocumentsZara" asp-action="OfficialDocuments">Dokumenti strateškog planiranja</a>
+            <li class="breadcrumb-item active" aria-current="page">Dodavanje novog dokumenta</li>
+        </ol>
+    </nav>
+
+    <div class="row">
+        <div class="col-md-12">
+            <form method="post" enctype="multipart/form-data" id="officialDocumentSave">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <p class="lead">
+                    Osnovne informacije o dokumentu strateškog planiranja
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label asp-for="@Model.OfficialDocumentZara.Name" class="control-label">Naziv dokumenta</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input type="text" placeholder="npr. Osnovna analiza" asp-for="@Model.OfficialDocumentZara.Name" class="form-control" />
+                            </div>
+                            <span asp-validation-for="@Model.OfficialDocumentZara.Name" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label asp-for="@Model.OfficialDocumentZara.ShortName" class="control-label">Skraćeni naziv dokumenta</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input type="text" placeholder="npr. Str. KZZ" asp-for="@Model.OfficialDocumentZara.ShortName" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Status dokumenta</label>
+                            <select class="form-control" id="stateOfDocument" asp-for="OfficialDocumentZara.DocumentStatusZaraId" asp-items="@(new SelectList(Model.DocumentStatusesZara,nameof(DocumentStatusZara.Id), nameof(DocumentStatusZara.Name)))">
+                                <option value="" selected="">Odaberite</option>
+                            </select>
+                            <span asp-validation-for="OfficialDocumentZara.DocumentStatusZaraId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-6">
+                            <label class="control-label">Odaberite tip dokumenta </label>
+                            <select class="form-control" asp-for="OfficialDocumentZara.DocumentTypeZaraId" asp-items="@(new SelectList(Model.DocumentTypesZara, nameof(DocumentTypeZara.Id), nameof(DocumentTypeZara.Name)))">
+                                <option value="" selected="">Odaberite</option>
+                            </select>
+                            <span asp-validation-for="OfficialDocumentZara.DocumentTypeZaraId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group col-md-3 ">
+                            <label asp-for="@Model.OfficialDocumentZara.DocumentEffectiveDate" class="control-label">Datum donošenja</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                                </div>
+                                <input type="text" autocomplete="off" asp-for="@Model.OfficialDocumentZara.DocumentEffectiveDate" class="form-control datepicker" />
+                            </div>
+                        </div>
+                        <div class="form-group col-md-6 offset-3">
+                            <label class="control-label">Dodatne informacije</label>
+                            <textarea style="max-height:130px; min-height:39px;" placeholder="Akt se odnosi na pojedine JLS" asp-for="@Model.OfficialDocumentZara.DocumentRemark" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="lead">
+                    Podaci o Glasniku
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="form-row">
+                        <div class="form-group col-md-4">
+                            <label class="control-label">Odaberite glasnik </label>
+                            <select class="form-control" asp-for="OfficialDocumentZara.OfficalSpatialNewsId" asp-items="@(new SelectList(Model.OfficalSpatialNews, nameof(OfficalSpatialNews.Id),nameof(OfficalSpatialNews.Name)))">
+                                <option value="" selected="">Odaberite</option>
+                            </select>
+                            <span asp-validation-for="OfficialDocumentZara.OfficalSpatialNewsId" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="@Model.OfficialDocumentZara.OfficialSpatialNewsNumber" class="control-label">Broj glasnika</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input type="text" placeholder="Npr. 03/19" asp-for="@Model.OfficialDocumentZara.OfficialSpatialNewsNumber" class="form-control" />
+                            </div>
+                            <span asp-validation-for="@Model.OfficialDocumentZara.OfficialSpatialNewsNumber" class="text-danger"></span>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <label asp-for="@Model.OfficialDocumentZara.OfficialSpatialNewsNumber" class="control-label">Link na glasnik</label>
+                            <div class="input-group mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-info"></i></span>
+                                </div>
+                                <input type="text" placeholder="Npr. www.kzz/glasnik.hr" asp-for="@Model.OfficialDocumentZara.OfficialSpatialNewsNumberUrl" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="lead">
+                    Podaci o arhiviranju
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="form-group col-md-4">
+                        <label asp-for="@Model.OfficialDocumentZara.DocumentIneffectiveDate" class="control-label">Datum stavljanja van snage</label>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
+                            </div>
+                            <input type="text" id="dateArchived" autocomplete="off" asp-for="@Model.OfficialDocumentZara.DocumentIneffectiveDate" class="form-control datepicker" />
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="lead">
+                    Dodavanje obaveznih priloga
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <div class="input-group mb-3 upload-documents">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
+                                </div>
+                                <div class="custom-file">
+                                    <input type="file" asp-for="@Model.RequiredDocuments" multiple accept="application/pdf" class="form-control custom-file-input" id="requiredDocuments" aria-describedby="inputGroupFileAddon01">
+                                    <label id="graphicRequiredDoc" class="custom-file-label" for="inputGroupFile01">Odaberite dokument/e</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <button type="button" id="removeRequiredDocuments" class="btn btn-outline-danger" disabled  style="margin-top: 12px;"><i class="far fa-trash-alt"></i> Makni dodane dokumente</button>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <p class="lead">
+                    Dodavanje dodatnih priloga
+                </p>
+                <hr />
+                <div class="edit-administration-form">
+                    <div class="form-row">
+                        <div class="form-group col-md-8">
+                            <div class="input-group mb-3 upload-documents">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="fas fa-file-upload"></i></span>
+                                </div>
+                                <div class="custom-file">
+                                    <input type="file" asp-for="@Model.AdditionalDocuments" multiple accept="application/pdf" class="form-control custom-file-input" id="additionalDocuments" aria-describedby="inputGroupFileAddon02">
+                                    <label id="graphicAdditionalDoc" class="custom-file-label" for="inputGroupFile02">Odaberite dokumente</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group col-md-4">
+                            <button type="button" id="removeAdditionalDocuments" class="btn btn-outline-danger" disabled style="margin-top: 12px;"><i class="far fa-trash-alt"></i> Makni dodane dokumente</button>
+                        </div>
+                    </div>
+                </div>
+                <br />
+                <br />
+                <div class="form-group">
+                    <a class="btn btn-outline-secondary" asp-action="OfficialDocuments"><span class="fas fa-arrow-left mr-1"></span>Povratak</a>
+                    <button type="submit" id="savingOfficialDocument" class="btn btn-outline-success"><i class="fa fa-check"></i> Pohrani promjene</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<style>
+    .custom-file-label::after {
+        content: "Pretraži" !important;
+    }
+
+    .form-group label {
+        font-weight: 600;
+    }
+</style>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{await Html.RenderPartialAsync("_BootboxScriptsPartial");}
+    @{await Html.RenderPartialAsync("_DatePickerPartial");}
+
+
+<script>
+        $(document).ready(function () {
+
+             let INVALID = @((int)Enums.ZaraDocumentStatus.INVALID);
+
+            $(".datepicker").datepicker({
+                dateFormat: "dd.mm.yy.",
+                dayNamesMin: ["Ne", "Pon", "Uto", "Sri", "Čet", "Pet", "Sub"],
+                monthNames: ["Siječanj", "Veljača", "Ožujak", "Travanj", "Svibanj", "Lipanj", "Srpanj", "Kolovoz", "Rujan", "Listopad", "Studeni", "Prosinac"]
+            });
+
+            let deleteRequiredDocumentsButton = document.getElementById('removeRequiredDocuments');
+            let deleteAdditionalDocumentsButton = document.getElementById('removeAdditionalDocuments');
+
+            $('#requiredDocuments').on("change", function () {
+                let fileLabel = $(this).next('.custom-file-label');
+                let files = $(this)[0].files;
+                let isOnlyPdf = checkIfNonPdfsExists(files, $(this)[0]);
+
+                let documentsSize = checkIfDocumentationsIsToLarge(files);
+                if (isOnlyPdf) {
+                    deleteRequiredDocumentsButton.disabled = false;
+
+                    if (documentsSize > 700000000) {
+                        bootbox.alert({
+                            centerVertical: true,
+                            message: "<div class='alert alert-danger' role='alert'><p>Maksimalna veličina dokumenata po pohranjivanju iznosi 700 MB.<br><p>Smanjite veličinu dokumenata ili pohranjivanje podijelite u dva dijela</p></div>",
+                            buttons: {
+                                ok: {
+                                    label: '<i class="fa fa-check"></i> Prihvati',
+                                    className: 'btn-success'
+                                }
+                            },
+                        });
+                    } else {
+
+                        if (files.length > 1) {
+                            fileLabel.html(`Dodana/o ${files.length} dokumenta`);
+                        } else if (files.length == 1) {
+                            fileLabel.html(files[0].name);
+                        }
+                    }
+
+                } else {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger' role='alert'>Moguće je dodati dokument samo u .PDF formatu!</div>",
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Prihvati',
+                                className: 'btn-success'
+                            }
+                        },
+                    });
+                }
+
+            });
+
+            $('#additionalDocuments').on("change", function () {
+                let fileLabel = $(this).next('.custom-file-label');
+                let files = $(this)[0].files;
+                let isOnlyPdf = checkIfNonPdfsExists(files, $(this)[0]);
+
+                let documentsSize = checkIfDocumentationsIsToLarge(files);
+
+                if (isOnlyPdf) {
+                    deleteAdditionalDocumentsButton.disabled = false;
+
+                    if (documentsSize > 700000000) {
+                        bootbox.alert({
+                            centerVertical: true,
+                            message: "<div class='alert alert-danger' role='alert'><p>Maksimalna veličina dokumenata po pohranjivanju iznosi 700 MB.<br><p>Smanjite veličinu dokumenata ili pohranjivanje podijelite u dva dijela</p></div>",
+                            buttons: {
+                                ok: {
+                                    label: '<i class="fa fa-check"></i> Prihvati',
+                                    className: 'btn-success'
+                                }
+                            },
+                        });
+                    } else {
+
+                        if (files.length > 1) {
+                            fileLabel.html(`Dodana/o ${files.length} dokumenta`);
+                        } else if (files.length == 1) {
+                            fileLabel.html(files[0].name);
+                        }
+                    }
+
+                } else {
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: "<div class='alert alert-danger' role='alert'>Moguće je dodati dokument samo u .PDF formatu!</div>",
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Prihvati',
+                                className: 'btn-success'
+                            }
+                        },
+                    });
+                }
+
+            });
+            $("#savingOfficialDocument").click(function () {  // your submit button id
+                let isValid = $("#officialDocumentSave").valid();
+                let requiredDocFiles = $("#requiredDocuments")[0].files;
+                if (isValid && requiredDocFiles.length > 0) {
+                    bootbox.dialog({
+                        centerVertical: true,
+                        message: '<p class="text-center mb-0"><i class="fa fa-spin fa-cog"></i> Molimo pričekajte, podaci se pohranjuju...</p>',
+                        closeButton: false
+                    });
+                } else {
+                    let errorMsg = "<div class='alert alert-danger text-center' role='alert'>Popunite obavezna polja!</div>";
+                    if (requiredDocFiles.length == 0) {
+                        errorMsg = "<div class='alert alert-danger text-center' role='alert'>Potrebno je unesti obaveznu dokumentaciju!</div>"
+                    }
+                    bootbox.alert({
+                        centerVertical: true,
+                        message: errorMsg,
+                        className: 'shake animated',
+                        buttons: {
+                            ok: {
+                                label: '<i class="fa fa-check"></i> Ispravi',
+                                className: 'btn-danger'
+                            }
+                        },
+                    });
+
+                    return false;
+                }
+            });
+
+            $('#removeRequiredDocuments').on("click", function () {
+                let graphicDocumentText = document.getElementById('graphicRequiredDoc');
+                graphicDocumentText.innerHTML = 'Odaberite dokument';
+                graphicDocumentText.value = '';
+                $(this)[0].disabled = true;
+            });
+
+            $('#removeAdditionalDocuments').on("click", function () {
+                let graphicDocumentText = document.getElementById('graphicAdditionalDoc');
+                graphicDocumentText.innerHTML = 'Odaberite dokument';
+                graphicDocumentText.value = '';
+                $(this)[0].disabled = true;
+            });
+            $('#stateOfDocument').on("change", function () {
+                if (this.value == INVALID) {
+                    $(this).attr('disabled', true);
+                    $("#dateArchived").datepicker().datepicker("setDate", new Date());
+                }
+
+            });
+
+
+
+            $('#dateArchived').on("change", function () {
+                if (this.value) {
+                    $('#stateOfDocument').val(INVALID);
+                    $('#stateOfDocument').attr('disabled', true);
+                } else {
+                    $('#stateOfDocument').attr('disabled', false);
+                }
+
+            });
+
+
+        });
+
+        function checkIfNonPdfsExists(filesCollection, htmlElement) {
+            let isOnlyPdf;
+            for (let file of filesCollection) {
+                let fileExtension = file.name.split('.').pop().toLowerCase();
+                if (fileExtension != "pdf") {
+                    htmlElement.value = '';
+                    isOnlyPdf = false;
+                    break;
+                } else {
+                    isOnlyPdf = true;
+                }
+            }
+            return isOnlyPdf;
+        }
+
+
+        function checkIfDocumentationsIsToLarge(files) {
+            let sizeValue = 0;
+            for (let file of files) {
+                sizeValue += parseInt(file.size);
+            }
+
+            return sizeValue;
+        }
+</script>
+}
