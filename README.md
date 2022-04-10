@@ -1,4 +1,4 @@
-# Zavod-KZZ
+# Spatial data repository for Krapina zagorje county
 A dynamic database system for facilitating metadata of spatial planning documents. 
 The database system makes existing data more easily accessible and enabling a more efficient use. 
 It is based on open source technologies and technologies available for commercial use which allows free upgrade and further modification in coordination with the needs of the Institute for Physical Planning and Krapina - Zagorje County.
